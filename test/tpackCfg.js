@@ -14,14 +14,14 @@ tpack.logLevel = 6;
 tpack.verbose = true;
 
 // 设置全局忽略的路径。
-tpack.ignore(".*", "_*", "$*", "*.psd", "*.ai", "*.log", "*.tmp", "*.db", "Desktop.ini", "tpack*", tpack.destPath);
-
+tpack.ignore(".*", "_*", "$*", "*~", "*.psd", "*.ai", "*.log", "*.tmp", "*.db", "Desktop.ini", "tpack*");
+ 
 //// 所有任务都需要先执行以下预编译的规则。
-//tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
+tpack.src("*.scss", "*.sass").pipe(require("tpack-sass"),{sourceMap:true}).dest("$1.css");
 //tpack.src("*.less").pipe(require("tpack-less")).dest("$1.css");
 //tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 //tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
-
+ 
 var assetsConfigs = {
 
     // 解析 #include 指令。
@@ -72,7 +72,7 @@ var assetsConfigs = {
 //tpack.src("scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
 //tpack.src("styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
 
-tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, assetsConfigs);
+//tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, assetsConfigs);
 
 // 生成任务。
 tpack.task('build', function (options) {
