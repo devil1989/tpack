@@ -15,13 +15,13 @@ tpack.verbose = true;
 
 // 设置全局忽略的路径。
 tpack.ignore(".*", "_*", "$*", "*~", "*.psd", "*.ai", "*.log", "*.tmp", "*.db", "Desktop.ini", "tpack*");
- 
-//// 所有任务都需要先执行以下预编译的规则。
-tpack.src("*.scss", "*.sass").pipe(require("tpack-sass"),{sourceMap:true}).dest("$1.css");
-//tpack.src("*.less").pipe(require("tpack-less")).dest("$1.css");
+
+// 所有任务都需要先执行以下预编译的规则。
+//tpack.src("*.scss", "*.sass").pipe(require("tpack-sass"), { sourceMap: "../map/$0.map" }).dest("$1.css");
+tpack.src("*.less").pipe(require("tpack-less"), { sourceMap: "../map/$0.map" }).dest("$1.css");
 //tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 //tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
- 
+
 var assetsConfigs = {
 
     // 解析 #include 指令。
@@ -77,8 +77,8 @@ var assetsConfigs = {
 // 生成任务。
 tpack.task('build', function (options) {
 
-    //// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
-    //tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).pipe(require('tpack-rename')).dest("cdn_upload/$1_<md5s>.$4");
+    // 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
+    tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).pipe(require('tpack-rename')).dest("cdn_upload/$1_<md5s>.$4");
 
     //// libs 和 include 发布时忽略。
     //tpack.src("libs/*", "include/*").dest(null);
@@ -89,7 +89,7 @@ tpack.task('build', function (options) {
 
     //// 压缩 CSS 和 JS。
     //tpack.src("*.css").pipe(require('tpack-clean-css'));
-    //tpack.src("*.js").pipe(require('tpack-uglify-js'));
+    tpack.src("*.js").pipe(require('tpack-uglify-js'), { sourceMap: "../map/$0.map" });
 
     //// 合并特定 JS 文件。
     //tpack.src("scripts/common.js", "scripts/blog.js").pipe(require('tpack-concat')).dest("scripts/common-concat-blog.js");
