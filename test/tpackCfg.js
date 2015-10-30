@@ -17,8 +17,8 @@ tpack.verbose = true;
 tpack.ignore(".*", "_*", "$*", "*~", "*.psd", "*.ai", "*.log", "*.tmp", "*.db", "Desktop.ini", "tpack*");
 
 // 所有任务都需要先执行以下预编译的规则。
-//tpack.src("*.scss", "*.sass").pipe(require("tpack-sass"), { sourceMap: "../map/$0.map" }).dest("$1.css");
-tpack.src("*.less").pipe(require("tpack-less"), { sourceMap: "../map/$0.map" }).dest("$1.css");
+//tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
+//tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
 //tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 //tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
@@ -57,6 +57,8 @@ var assetsConfigs = {
     // require 未包含扩展名时，尝试自动追加的扩展名。
     extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
 
+    extensions: ['.js', '.css'],
+
     // 将包含以下扩展名的文件自动导出到外部文件，而非放入当前文件。
     exports: {
         '.css': '../styles/$0.css',
@@ -72,32 +74,32 @@ var assetsConfigs = {
 //tpack.src("scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
 //tpack.src("styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
 
-//tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, assetsConfigs);
+tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, assetsConfigs);
 
 // 生成任务。
 tpack.task('build', function (options) {
 
+    // 压缩 CSS 和 JS。
+    //tpack.src("*.css").pipe(require('tpack-clean-css'));
+    //tpack.src("*.js").pipe(require('tpack-uglify-js'));
+
     // 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
     tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).pipe(require('tpack-rename')).dest("cdn_upload/$1_<md5s>.$4");
 
-    //// libs 和 include 发布时忽略。
-    //tpack.src("libs/*", "include/*").dest(null);
+    // libs 和 include 发布时忽略。
+    tpack.src("libs/*", "include/*").dest(null);
 
     //// 引用资源文件时，统一添加时间后缀。
     //assetsConfigs.urlPostfix = "_=<date>";
     //assetsConfigs.exportDest = true;
 
-    //// 压缩 CSS 和 JS。
-    //tpack.src("*.css").pipe(require('tpack-clean-css'));
-    tpack.src("*.js").pipe(require('tpack-uglify-js'), { sourceMap: "../map/$0.map" });
+    // 合并特定 JS 文件。
+    tpack.src("full-test.html", "full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
 
-    //// 合并特定 JS 文件。
-    //tpack.src("scripts/common.js", "scripts/blog.js").pipe(require('tpack-concat')).dest("scripts/common-concat-blog.js");
-
-    //// 直接生成文件。
-    //tpack.src().pipe(function (file, options, builder) {
-    //    return "此项目是从 " + builder.srcPath + " 生成的，不要修改！生成时间：" + new Date()
-    //}).dest("NOTE.txt");
+    // 直接生成文件。
+    tpack.src().pipe(function (file, options, builder) {
+        return "此项目是从 " + builder.srcPath + " 生成的，不要修改！生成时间：" + new Date()
+    }).dest("NOTE.txt");
 
     // 开始根据之前定制的所有规则开始生成操作。
     tpack.build();

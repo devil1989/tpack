@@ -1,2 +1,5 @@
-"use strict";a>2;
-//# sourceMappingURL=d:\mywork\Node\node_modules\tpack\test\_dest\cdn_upload\map\blog_576b69.js.map
+"use strict";
+
+/* 这里放全部详情页的公共代码 */
+if(a>2){}
+
