@@ -18,17 +18,45 @@ tpack.ignore(".*", "_*", "$*", "*~", "*.psd", "*.ai", "*.log", "*.tmp", "*.db", 
 
 // 所有任务都需要先执行以下预编译的规则。
 //tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
-//tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
+tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
 //tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 //tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
 var assetsConfigs = {
 
-    // 解析 #include 指令。
-    parseInclude: true,
+    // 路径中 / 表示的实际路径。
+    rootPath: "",
+
+    // 是否解析  ?__inline 指令。 'auto' 表示自动判断。
+    inline: 'auto',
+
+    // 路径中 // 表示的协议。
+    protocal: '',
+
+    // require 全局搜索路径。如果未指定则不启用全局搜索功能，所有路径均为相对路径。
+    paths: ["libs"],
+
+    // 是否将目录层级上的所有 node_modules 文件夹追加到全局搜索路径。
+    searchNodeModules: true,
+
+    // require 未包含扩展名时，尝试自动追加的扩展名。
+    extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
+    extensions: ['.js', '.css'],
 
     // 解析 ?__url 指令。
-    parseUrl: true,
+    resolveUrls: true,
+
+    urlPostfix: "_=<date>",
+
+
+
+
+    // 是否允许请求远程服务器的模块。
+    requestRemoteModules: true,
+
+
+    // 解析 #include 指令。
+    parseInclude: true,
 
     // 解析 __dest 导出指令。
     parseDest: false,
@@ -48,17 +76,6 @@ var assetsConfigs = {
     // 解析 CSS 地址指令。
     parseCssUrl: true,
 
-    // require 全局搜索路径。如果未指定则不启用全局搜索功能，所有路径均为相对路径。
-    paths: ["libs"],
-
-    // 是否将目录层级上的所有 node_modules 文件夹追加到全局搜索路径。
-    searchNodeModules: true,
-
-    // require 未包含扩展名时，尝试自动追加的扩展名。
-    extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
-
-    extensions: ['.js', '.css'],
-
     // 将包含以下扩展名的文件自动导出到外部文件，而非放入当前文件。
     exports: {
         '.css': '../styles/$0.css',
@@ -70,11 +87,9 @@ var assetsConfigs = {
 };
 
 // 解析资源文件中的 require 和 #include。
-//tpack.src("*.html", "*.htm", "*.inc").pipe(require("tpack-assets").html, assetsConfigs);
-//tpack.src("scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
-//tpack.src("styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
-
-tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, assetsConfigs);
+tpack.src("*.html", "*.htm", "*.inc").pipe(require("tpack-assets").html, assetsConfigs);
+tpack.src("scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
+tpack.src("styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
 
 // 生成任务。
 tpack.task('build', function (options) {

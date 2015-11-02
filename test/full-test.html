@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <title>TPack 完整功能展示页</title>
 	
+	<!-- #include virtual="include/header.inc" -->
+	
 	<!-- 内嵌 CSS -->
 	<style type="text/css"> .inline { color: red; } </style>
 	
@@ -31,10 +33,16 @@
 </head>
 <body>
     
-    <!-- 10. 处理自定义的 URL -->
+	<!-- #include virtual="include/body.inc" -->
+	
+    <!-- 处理自定义的 URL -->
     <img data-src="aa.jpg?__url">
     
-    <!-- 11. require -->
+	<!-- #include virtual="include/footer.inc" -->
+	
+    <!-- require -->
     <script src="libs/src/partC/test-requirejs.main.js"></script>
+	
+	<!-- #include virtual="include/stat.inc" -->
 </body>
 </html>

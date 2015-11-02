@@ -8,4 +8,4 @@
     <link rel="shortcut icon" href="../images/favicon.ico" />
     <link rel="apple-touch-icon" href="../images/favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="../styles/common.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/blog.css" />
