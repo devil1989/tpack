@@ -15,7 +15,7 @@ function main(argv) {
     // 预设命令参数。
     tpack.srcPath = options.src || options['in'] || options.i || tpack.srcPath;
     tpack.destPath = options.dest || options.out || options.o || tpack.destPath;
-    tpack.logLevel = isNaN(+options.level) ? options.error ? 1 : tpack.logLevel : +options.level;
+    tpack.logLevel = isNaN(+options.level) ? options.all ? 6 : tpack.logLevel : +options.level;
     tpack.verbose = options.verbose || options.debug || options.d || tpack.verbose;
     
     // 处理全局指令。
