@@ -88,8 +88,8 @@ var assetsConfigs = {
 
 // 解析资源文件中的 require 和 #include。
 tpack.src("*.html", "*.htm", "*.inc").pipe(require("tpack-assets").html, assetsConfigs);
-tpack.src("scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
-tpack.src("styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
+tpack.src("/scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
+tpack.src("/styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
 
 // 生成任务。
 tpack.task('build', function (options) {
@@ -109,7 +109,7 @@ tpack.task('build', function (options) {
     //assetsConfigs.exportDest = true;
 
     // 合并特定 JS 文件。
-    tpack.src("full-test.html", "full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
+    tpack.src("/full-test.html", "/full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
 
     // 直接生成文件。
     tpack.src().pipe(function (file, options, builder) {
