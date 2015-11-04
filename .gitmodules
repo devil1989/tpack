@@ -1,6 +1,3 @@
-[submodule "node_modules/tpack-all"]
-	path = node_modules/tpack-all
-	url = https://github.com/tpack/tpack-all.git
 [submodule "node_modules/tpack-assets"]
 	path = node_modules/tpack-assets
 	url = https://github.com/tpack/tpack-assets.git
@@ -16,9 +13,6 @@
 [submodule "node_modules/tpack-concat"]
 	path = node_modules/tpack-concat
 	url = https://github.com/tpack/tpack-concat.git
-[submodule "node_modules/tpack-es6"]
-	path = node_modules/tpack-es6
-	url = https://github.com/tpack/tpack-es6.git
 [submodule "node_modules/tpack-rename"]
 	path = node_modules/tpack-rename
 	url = https://github.com/tpack/tpack-rename.git
@@ -31,8 +25,9 @@
 [submodule "node_modules/tpack-uglify-js"]
 	path = node_modules/tpack-uglify-js
 	url = https://github.com/tpack/tpack-uglify-js.git
-
-
 [submodule "node_modules/tpack-web"]
 	path = node_modules/tpack-web
 	url = https://github.com/tpack/tpack-web.git
+[submodule "node_modules/tpack-babel"]
+	path = node_modules/tpack-babel
+	url = https://github.com/tpack/tpack-babel.git
