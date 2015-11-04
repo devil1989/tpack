@@ -7,21 +7,18 @@ tpack.srcPath = "";
 // 设置目标文件夹。
 tpack.destPath = "_dest";
 
-// 设置日志等级。（6 表示最高，调试级别）
-tpack.logLevel = 6;
-
-// 启用调试。
-tpack.verbose = true;
+//// 启用调试。
+//tpack.verbose = true;
 
 // 设置全局忽略的路径。
 tpack.loadIgnoreFile(".gitignore");
 tpack.ignore(".*", "*/.*", "_*", "$*");
 
 // 所有任务都需要先执行以下预编译的规则。
-//tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
+tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
 tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
-//tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
-//tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
+tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
+tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
 var assetsConfigs = {
 
@@ -110,7 +107,7 @@ tpack.task('build', function (options) {
     //assetsConfigs.exportDest = true;
 
     // 合并特定 JS 文件。
-    tpack.src("/full-test.html", "/full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
+    tpack.src("full-test.html", "full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
 
     // 直接生成文件。
     tpack.src().pipe(function (file, options, builder) {
