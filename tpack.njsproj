@@ -35,7 +35,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="package.json" />
     <Content Include="test\include\body.inc" />
     <Content Include="test\include\footer.inc" />
     <Content Include="test\include\header.inc" />
@@ -49,6 +48,7 @@
   <ItemGroup>
     <Folder Include="bin\" />
     <Folder Include="lib\" />
+    <Folder Include="lib\i18n\" />
     <Folder Include="test\" />
     <Folder Include="test\assets\" />
     <Folder Include="test\include\" />
@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="bin\tpack-cli.js" />
+    <Compile Include="lib\i18n\zh-cn.js" />
     <Compile Include="test\libs\src\partC\test-requirejs.main.js" />
     <Compile Include="test\_my\build.js" />
     <Compile Include="lib\index.js" />
