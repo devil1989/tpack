@@ -14,7 +14,8 @@ tpack.logLevel = 6;
 tpack.verbose = true;
 
 // 设置全局忽略的路径。
-tpack.ignore(".*", "_*", "$*", "*~", "*.psd", "*.ai", "*.log", "*.tmp", "*.db", "Desktop.ini", "tpack*");
+tpack.loadIgnoreFile(".gitignore");
+tpack.ignore(".*", "*/.*", "_*", "$*");
 
 // 所有任务都需要先执行以下预编译的规则。
 //tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
@@ -88,15 +89,15 @@ var assetsConfigs = {
 
 // 解析资源文件中的 require 和 #include。
 tpack.src("*.html", "*.htm", "*.inc").pipe(require("tpack-assets").html, assetsConfigs);
-tpack.src("/scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
-tpack.src("/styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
+tpack.src("scripts/*.js").pipe(require("tpack-assets").js, assetsConfigs);
+tpack.src("styles/*.css").pipe(require("tpack-autoprefixer")).pipe(require("tpack-assets").css, assetsConfigs);
 
 // 生成任务。
 tpack.task('build', function (options) {
 
     // 压缩 CSS 和 JS。
-    //tpack.src("*.css").pipe(require('tpack-clean-css'));
-    //tpack.src("*.js").pipe(require('tpack-uglify-js'));
+    tpack.src("*.css").pipe(require('tpack-clean-css'));
+    tpack.src("*.js").pipe(require('tpack-uglify-js'));
 
     // 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
     tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).pipe(require('tpack-rename')).dest("cdn_upload/$1_<md5s>.$4");

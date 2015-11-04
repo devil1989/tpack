@@ -12,6 +12,12 @@ function main(argv) {
     
     // 解析命令行参数。
     var options = parseArgv(argv);
+
+    // 设置默认任务。
+    if (!options.length) {
+        options.length = 1;
+        options[0] = 'default';
+    }
     
     // -v, -version, --version
     if (options.version = options.v || options.version || options["-version"]) {
@@ -45,6 +51,11 @@ function main(argv) {
     if (options.verbose = options.verbose || options.debug || options.d) {
         tpack.verbose = true;
     }
+
+    // --no-color
+    if (options['no-color'] = options['no-color'] || options['-no-color']) {
+        tpack.colored = false;
+    }
     
     // -error, -e, -info, -silient, -s, -log
     tpack.logLevel = options.error || options.e ? tpack.LOG_LEVEL.error :
@@ -64,7 +75,11 @@ function main(argv) {
     
     // 执行 tpackCfg.js
     if (FS.existsSync(options.config)) {
+        exports.configPath = options.config;
         require(options.config);
+    } else if (!tpack.rules.length && options.length === 1 && options[0] === 'default') {
+        tpack.error("Cannot find `{0}`. Use `tpack init` to create it.", options.config);
+        return;
     }
     
     // 驱动主任务。 
