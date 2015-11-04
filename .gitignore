@@ -27,6 +27,8 @@ $RECYCLE.BIN/
 WebWorkbench.mswwsettings
 _notes
 .settings
+.vscode
+.vs
 
 ## Visual Studio 相关
 
