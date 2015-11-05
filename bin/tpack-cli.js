@@ -13,12 +13,6 @@ function main(argv) {
     // 解析命令行参数。
     var options = parseArgv(argv);
 
-    // 设置默认任务。
-    if (!options.length) {
-        options.length = 1;
-        options[0] = 'default';
-    }
-    
     // -v, -version, --version
     if (options.version = options.v || options.version || options["-version"]) {
         console.log(require('../package.json').version);
@@ -77,15 +71,13 @@ function main(argv) {
     if (FS.existsSync(options.config)) {
         exports.configPath = options.config;
         require(options.config);
-    } else if (!tpack.rules.length && options.length === 1 && options[0] === 'default') {
+    } else if (!tpack.rules.length && !options[0]) {
         tpack.error("Cannot find `{0}`. Use `tpack init` to create it.", options.config);
         return;
     }
     
     // 驱动主任务。 
-    for (var i = 0; i < options.length; i++) {
-        tpack.task(options[i], options);
-    }
+    tpack.task(options[0] || 'default', options);
 
 }
 
