@@ -20,16 +20,13 @@ tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
-// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
-tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
-
 // libs 和 include 发布时忽略。
 tpack.src("libs/*", "include/*").dest(null);
 
 function assets(build) {
 
     // 解析资源文件中的 require 和 #include。
-    tpack.src("*.html", "*.htm", "cdn_upload/*").pipe(require("tpack-assets"), {
+    tpack.src("*.html", "*.htm", "*.css", "*.js").pipe(require("tpack-assets"), {
 
         // 路径中 / 表示的实际路径。
         rootPath: "",
@@ -103,6 +100,9 @@ tpack.task('build', function (options) {
     // 压缩 CSS 和 JS。
     tpack.src("*.css").pipe(require('tpack-clean-css'));
     tpack.src("*.js").pipe(require('tpack-uglify-js'));
+
+    // 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
+    tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
     tpack.addCdn("cdn_upload", "http://cdn.com/assets");
 
     // 合并特定 JS 文件。
