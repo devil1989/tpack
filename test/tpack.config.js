@@ -12,7 +12,7 @@ tpack.destPath = "_dest";
 
 // 设置全局忽略的路径。
 tpack.loadIgnoreFile(".gitignore");
-tpack.ignore(".*", "_*", "$*", "tpack*");
+tpack.ignore(".*", "_*", "$*", "*~", "tpack*");
 
 // 所有任务都需要先执行以下预编译的规则。
 tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
@@ -20,10 +20,16 @@ tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
+// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
+tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
+
+// libs 和 include 发布时忽略。
+tpack.src("libs/*", "include/*").dest(null);
+
 function assets(build) {
 
     // 解析资源文件中的 require 和 #include。
-    tpack.src("*.html", "*.htm", "scripts/*.js", "styles/*.css").pipe(require("tpack-assets"), {
+    tpack.src("*.html", "*.htm", "cdn_upload/*").pipe(require("tpack-assets"), {
 
         // 路径中 / 表示的实际路径。
         rootPath: "",
@@ -92,18 +98,12 @@ function assets(build) {
 // 生成任务。
 tpack.task('build', function (options) {
 
+    assets(true);
+
     // 压缩 CSS 和 JS。
     tpack.src("*.css").pipe(require('tpack-clean-css'));
     tpack.src("*.js").pipe(require('tpack-uglify-js'));
-
-    // 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
-    tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
     tpack.addCdn("cdn_upload", "http://cdn.com/assets");
-
-    assets(true);
-
-    // libs 和 include 发布时忽略。
-    tpack.src("libs/*", "include/*").dest(null);
 
     // 合并特定 JS 文件。
     tpack.src("full-test.html", "full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
@@ -127,7 +127,7 @@ tpack.task('watch', function (options) {
 // 服务器任务。
 tpack.task('server', function (options) {
     assets(false);
-    tpack.startServer(options.port || 8080);
+    tpack.startServer(options);
 });
 
 // 支持在执行 node tpack.config.js 时直接执行 default 任务。

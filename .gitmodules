@@ -13,9 +13,6 @@
 [submodule "node_modules/tpack-concat"]
 	path = node_modules/tpack-concat
 	url = https://github.com/tpack/tpack-concat.git
-[submodule "node_modules/tpack-rename"]
-	path = node_modules/tpack-rename
-	url = https://github.com/tpack/tpack-rename.git
 [submodule "node_modules/tpack-less"]
 	path = node_modules/tpack-less
 	url = https://github.com/tpack/tpack-less.git
