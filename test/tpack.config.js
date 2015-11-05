@@ -7,8 +7,8 @@ tpack.srcPath = "";
 // 设置目标文件夹。
 tpack.destPath = "_dest";
 
-//// 启用调试。
-//tpack.verbose = true;
+// 启用调试。
+tpack.verbose = true;
 
 // 设置全局忽略的路径。
 tpack.loadIgnoreFile(".gitignore");
