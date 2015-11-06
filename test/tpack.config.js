@@ -14,18 +14,18 @@ tpack.verbose = true;
 tpack.loadIgnoreFile(".gitignore");
 tpack.ignore(".*", "_*", "$*", "*~", "tpack*");
 
-function initRules(build, watch, server){
+tpack.init = function(options){
 
-    // 所有任务都需要先执行以下预编译的规则。
+    // 忽略 libs 和 include 目录。
+    tpack.src("libs/*", "include/*").dest(null);
+
+    // 预编译。
     tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
     tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
     tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
     tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
-    // libs 和 include 发布时忽略。
-    tpack.src("libs/*", "include/*").dest(null);
-
-    if(build || watch) {
+    if(options.build) {
         // 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
         tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
         tpack.addCdnUrl("cdn_upload", "http://cdn.com/assets");
@@ -52,7 +52,7 @@ function initRules(build, watch, server){
         exclude: ["assets/common.js"]
     });
 
-    if(build) {
+    if(options.build) {
         // 压缩 CSS 和 JS。
         tpack.src("*.css").pipe(require('tpack-clean-css'));
         tpack.src("*.js").pipe(require('tpack-uglify-js'));
@@ -60,10 +60,10 @@ function initRules(build, watch, server){
 
     // 处理 HTML 内依赖。
     tpack.src("*.html", "*.htm").pipe(require("tpack-assets"), {
-        inline: server ? false : true
+        inline: options.server ? false : true
     });
 
-    if(build) {
+    if(options.build) {
 
         // 直接生成文件。
         tpack.src().pipe(function (file, options, builder) {
@@ -75,25 +75,7 @@ function initRules(build, watch, server){
 
     }
 
-}
-
-// 生成任务。
-tpack.task('build', function (options) {
-    initRules(true, false, false);
-    tpack.build(options);
-});
-
-// 监听任务。
-tpack.task('watch', function (options) {
-    initRules(true, false, false);
-    tpack.watch(options.path);
-});
-
-// 服务器任务。
-tpack.task('server', function (options) {
-    initRules(false, false, true);
-    tpack.startServer(options);
-});
+};
 
 // 支持在执行 node tpack.config.js 时直接执行 default 任务。
 if (process.mainModule === module) {
