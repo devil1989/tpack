@@ -28,3 +28,6 @@
 [submodule "node_modules/tpack-babel"]
 	path = node_modules/tpack-babel
 	url = https://github.com/tpack/tpack-babel.git
+[submodule "node_modules/tpack-requirejs"]
+	path = node_modules/tpack-requirejs
+	url = https://github.com/tpack/tpack-requirejs.git
