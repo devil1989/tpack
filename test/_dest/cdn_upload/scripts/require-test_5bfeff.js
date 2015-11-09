@@ -1,1 +1,0 @@
-console.log("a"),require("partC/c")();var a=6;

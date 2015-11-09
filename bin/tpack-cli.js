@@ -6,12 +6,12 @@ var FS = require("fs");
 var Path = require('path');
 var tpack = module.exports = require('../lib/index.js');
 
-main(process.argv.slice(2));
+main();
 
-function main(argv) {
+function main() {
     
     // 解析命令行参数。
-    var options = parseArgv(argv);
+    var options = tpack.options;
 
     // -v, -version, --version
     if (options.version = options.v || options.version || options["-version"]) {
@@ -30,33 +30,6 @@ function main(argv) {
         options[0] = 'help';
         options.length = 1;
     }
-    
-    // -src, -in, -i
-    if (options.src = options.src || options['in'] || options.i) {
-        tpack.srcPath = options.src;
-    }
-
-    // -dest, -out, -o
-    if (options.dest = options.dest || options.out || options.o) {
-        tpack.destPath = options.dest;
-    }
-    
-    // -verbose, -debug, -d
-    if (options.verbose = options.verbose || options.debug || options.d) {
-        tpack.verbose = true;
-    }
-
-    // --no-color
-    if (options['no-color'] = options['no-color'] || options['-no-color']) {
-        tpack.colored = false;
-    }
-    
-    // -error, -e, -info, -silient, -s, -log
-    tpack.logLevel = options.error || options.e ? tpack.LOG_LEVEL.error :
-        options.log ? tpack.LOG_LEVEL.log :
-        options.info ? tpack.LOG_LEVEL.info :
-        options.silient || options.s ? tpack.LOG_LEVEL.none :
-        tpack.logLevel;
     
     // 支持载入全局模块。
     try {
@@ -77,33 +50,6 @@ function main(argv) {
     }
     
     // 驱动主任务。 
-    tpack.task(options[0] || 'default', options);
+    tpack.run();
 
-}
-
-/**
- * 解析命令提示符参数。
- * @param {Array} 原始参数数组。
- * @returns {Object} 返回键值对象。
- * @example 
- * parseArgv(["a", "-c1", "-c2", "v", "b"]) // {0: "a", c1: true, c2: "v", 1: "b"}
- */
-function parseArgv(argv) {
-    var result = {length: 0};
-    for (var i = 0; i < argv.length; i++) {
-        var arg = argv[i];
-        if (/^[\-\/]/.test(arg)) {
-            var value = argv[i + 1];
-            var nextIsCommand = !value || /^[\-\/]/.test(value);
-            if (nextIsCommand) {
-                value = true;
-            } else {
-                i++;
-            }
-            result[arg.substr(1)] = value;
-        } else {
-            result[result.length++] = arg;
-        }
-    }
-    return result;
 }
