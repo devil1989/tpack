@@ -21,44 +21,49 @@ tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
+tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, {
+    paths: ["libs"],
+    extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
+});
+
 if (tpack.cmd === "build") {
 	// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
 	tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
 	tpack.addCdnUrl("cdn_upload", "http://cdn.com/assets");
 }
 
-// 解析 CSS 和 JS 内的模块化部分。
-tpack.src("*.css").pipe(require("tpack-assets").css);
-tpack.src("*.js").pipe(require("tpack-assets").js, {
+//// 解析 CSS 和 JS 内的模块化部分。
+//tpack.src("*.css").pipe(require("tpack-assets").css);
+//tpack.src("*.js").pipe(require("tpack-assets").js, {
 	
-	// require 未包含扩展名时，尝试自动追加的扩展名。
-	extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
+//	// require 未包含扩展名时，尝试自动追加的扩展名。
+//	extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
 	
-	// require 全局搜索路径。如果未指定则不启用全局搜索功能，所有路径均为相对路径。
-	paths: ["libs"],
+//	// require 全局搜索路径。如果未指定则不启用全局搜索功能，所有路径均为相对路径。
+//	paths: ["libs"],
 	
-	// 将包含以下扩展名的文件自动导出到外部文件，而非放入当前文件。
-	exports: {
-		// 导出 JS 中依赖的 CSS 文件到同名 CSS 文件。
-		'css': '../styles/$1.css',
-		// 导出 JS 中依赖的 CSS文件到同名 
-		'resources': '../images/',
-	},
+//	// 将包含以下扩展名的文件自动导出到外部文件，而非放入当前文件。
+//	exports: {
+//		// 导出 JS 中依赖的 CSS 文件到同名 CSS 文件。
+//		'css': '../styles/$1.css',
+//		// 导出 JS 中依赖的 CSS文件到同名 
+//		'resources': '../images/',
+//	},
 	
-	// 自动排除以下文件。
-	exclude: ["assets/common.js"]
-});
+//	// 自动排除以下文件。
+//	exclude: ["assets/common.js"]
+//});
 
-if (tpack.cmd === "build") {
-	// 压缩 CSS 和 JS。
-	tpack.src("*.css").pipe(require('tpack-clean-css'));
-	tpack.src("*.js").pipe(require('tpack-uglify-js'));
-}
+//if (tpack.cmd === "build") {
+//	// 压缩 CSS 和 JS。
+//	tpack.src("*.css").pipe(require('tpack-clean-css'));
+//	tpack.src("*.js").pipe(require('tpack-uglify-js'));
+//}
 
-// 处理 HTML 内依赖。
-tpack.src("*.html", "*.htm").pipe(require("tpack-assets").html, {
-	inline: tpack.cmd === "server" ? false : true
-});
+//// 处理 HTML 内依赖。
+//tpack.src("*.html", "*.htm").pipe(require("tpack-assets").html, {
+//	inline: tpack.cmd === "server" ? false : true
+//});
 
 if (tpack.cmd === "build") {
 	
@@ -70,4 +75,9 @@ if (tpack.cmd === "build") {
 	// 合并特定文件。
 	tpack.src("full-test.html").pipe(require('tpack-concat')).dest("full-test-2.html");
 
+}
+
+// 当执行 node tpack.config.js 时，负责直接执行任务。
+if(process.mainModule === module) {
+	tpack.run();
 }
