@@ -100,7 +100,7 @@ TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
 
     <!-- #include virtual="header.inc" -->
 
-更多说明和用法见 [Js 模块化](https://github.com/tpack/tpack-assets/wiki/html)
+更多说明和用法见 [HTML处理](https://github.com/tpack/tpack-assets/wiki/html)
 
 ## 2. JS 模块化
 
@@ -124,7 +124,7 @@ TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
 
 更多说明和用法见 [Js 模块化](https://github.com/tpack/tpack-assets/wiki/js)
 
-## 3. 简单压缩时间戳上线
+## 3. 代码压缩和时间戳
 
 如果您有一个现成的 PHP 等项目，只需要压缩代码、加时间戳等功能，可以使用 `tpack-web` 插件。
 
