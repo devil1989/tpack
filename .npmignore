@@ -7,6 +7,8 @@ docs
 node*
 *proj
 *.sln
+.gitmodules
+.vscode
 
 ## 用户自定义路径
 

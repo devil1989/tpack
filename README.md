@@ -7,8 +7,10 @@ TPack 是一个使用 NodeJS 开发的项目构建工具。
 1. 安装 NodeJS 和 npm。具体请参考 [NodeJS 官网](https://nodejs.org)
 2. 使用 npm 下载 TPack:
 
+```
     > npm install -g tpack
     > tpack -v                  # 验证 tpack 是否正确安装
+```
   
 ## 首次使用
 
