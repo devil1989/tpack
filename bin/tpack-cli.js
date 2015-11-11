@@ -41,8 +41,8 @@ function main() {
     // 执行 tpack.config.js
     if (FS.existsSync(options.config)) {
         require(options.config);
-    } else if (!tpack.builder.rules.length && tpack.srcPath === tpack.destPath && (tpack.cmd === "build" || tpack.cmd === "watch")) {
-        tpack.error("Cannot find '{0}'. Use 'tpack init' to create it.", options.config);
+    } else if (!tpack.builder.rules.length && (tpack.cmd === "build" || tpack.cmd === "watch")) {
+        tpack.builder.error("Cannot find '{0}'. Use 'tpack init' to create it.", options.config);
         return;
     }
     

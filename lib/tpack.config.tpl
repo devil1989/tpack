@@ -16,14 +16,8 @@ tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
-// 生成任务。
-tpack.task('build', function (options) {
-	
-    // 压缩 CSS 和 JS。
+// 压缩 CSS 和 JS。
+if(tpack.cmd === "build") {
     tpack.src("*.css").pipe(require('tpack-clean-css'));
     tpack.src("*.js").pipe(require('tpack-uglify-js'));
-
-    // 开始根据之前定制的所有规则开始生成操作。
-    tpack.build(options);
-
-});
+}
