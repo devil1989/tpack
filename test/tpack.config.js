@@ -5,8 +5,8 @@ var tpack = require("../lib/index.js");
 tpack.srcPath = "";
 tpack.destPath = "_dest";
 
-// 启用调试。
-tpack.verbose = true;
+//// 启用调试。
+//tpack.verbose = true;
 
 // 设置全局忽略的路径。
 tpack.loadIgnoreFile(".gitignore");
@@ -21,16 +21,17 @@ tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
-tpack.src("scripts/require-test.js").pipe(require("tpack-assets").js, {
+tpack.src("*").pipe(require("tpack-assets"), {
     paths: ["libs"],
     extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
+   // resolveUrl: tpack.cmd === "server" ? false : true
 });
 
-if (tpack.cmd === "build") {
-	// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
-	tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
-	tpack.addCdnUrl("cdn_upload", "http://cdn.com/assets");
-}
+//if (tpack.cmd === "build") {
+//	// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
+//	tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
+//	tpack.addCdnUrl("cdn_upload", "http://cdn.com/assets");
+//}
 
 //// 解析 CSS 和 JS 内的模块化部分。
 //tpack.src("*.css").pipe(require("tpack-assets").css);
