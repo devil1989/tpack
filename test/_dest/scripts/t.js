@@ -9,7 +9,7 @@ var __tpack__ = __tpack__ || {
 	require: function (moduleName, callback) {
 		var module = __tpack__.modules[moduleName];
 		if (!module) {
-			throw new Error("Can not find module: " + moduleName);
+			throw new Error("Cannot find module '" + moduleName + "'");
 		}
 		if (!module.loaded) {
 			module.loaded = true;
@@ -3210,7 +3210,92 @@ Date.prototype.format = function (format) {
 // #endregion
 
 });
-"data:application/json;base64,ew0KICAgICJwb3J0IjogODAsDQogICAgInBoeXNpY2FsUGF0aCI6ICIuLi8iLA0KICAgICJ2aXJ0dWFsUGF0aHMiOiB7DQoNCiAgICB9LA0KICAgICJtb2R1bGVzIjogew0KICAgICAgICAidXJsUmV3cml0ZSI6ICIuL21vZHVsZXMvdXJscmV3cml0ZS5qcyINCiAgICB9LA0KICAgICJkZWZhdWx0UGFnZXMiOiB7IA0KICAgICAgICAiaW5kZXguaHRtIjogdHJ1ZSwNCgkJImluZGV4Lmh0bWwiOiB0cnVlDQogICAgfSwNCiAgICAiaGFuZGxlcnMiOiB7DQogICAgICAgICJkaXJlY3RvcnkiOiAiLi9oYW5kbGVycy9kaXJlY3RvcnloYW5kbGVyLmpzIiwNCiAgICAgICAgImVycm9yIjogIi4vaGFuZGxlcnMvZXJyb3JoYW5kbGVyLmpzIiwNCiAgICAgICAgIi5uanMiOiAiLi9oYW5kbGVycy9uanNoYW5kbGVyLmpzIiwNCiAgICAgICAgIioiOiAiLi9oYW5kbGVycy9zdGF0aWNmaWxlaGFuZGxlci5qcyINCiAgICB9LA0KICAgICJ1cmxSZXdyaXRlcyI6IHsNCg0KICAgIH0sDQogICAgIm1pbWVUeXBlcyI6IHsNCiAgICAgICAgIi5odG1sIjogInRleHQvaHRtbCIsDQoJCSIuaHRtIjogInRleHQvaHRtbCIsDQoJCSIuY3NzIjogInRleHQvY3NzIiwNCgkJIi5sZXNzIjogInRleHQvY3NzIiwNCgkJIi5qcyI6ICJ0ZXh0L2phdmFzY3JpcHQiLA0KCQkiLnR4dCI6ICJ0ZXh0L3BsYWluIiwNCgkJIi54bWwiOiAidGV4dC94bWwiLA0KCQkiLmJtcCI6ICJpbWFnZS9ibXAiLA0KCQkiLnBuZyI6ICJpbWFnZS9wbmciLA0KCQkiLmpwZyI6ICJpbWFnZS9qcGciLA0KCQkiLmpwZWciOiAiaW1hZ2UvanBlZyIsDQoJCSIuZ2lmIjogImltYWdlL2dpZiIsDQoJCSIuaWNvIjogImltYWdlL2ljb24iLA0KCQkiLndvZmYiOiAiYXBwbGljYXRpb24veC1mb250LXdvZmYiLA0KICAgICAgICAiLnN2ZyI6ICJpbWFnZS9zdmcreG1sIiwNCiAgICAgICAgIi5zd2YiOiAiYXBwbGljYXRpb24veC1zaG9ja3dhdmUtZmxhc2giLA0KDQogICAgICAgICIudHBsIiA6ICJ0ZXh0L2h0bWwiLAogICAgICAgICIuanN4IiA6ICJ0ZXh0L2phdmFzY3JpcHQiLAogICAgICAgICIucGhwIiA6ICJ0ZXh0L2h0bWwiLAogICAgICAgICIuYXNwIiA6ICJ0ZXh0L2h0bWwiLAogICAgICAgICIuanNwIiA6ICJ0ZXh0L2pzcCIsCiAgICAgICAgIi50eHQiIDogInRleHQvcGxhaW4iLAogICAgICAgICIuanNvbiIgOiAiYXBwbGljYXRpb24vanNvbiIsCiAgICAgICAgIi50ZXh0IiA6ICJ0ZXh0L3BsYWluIiwKICAgICAgICAiLm1kIiA6ICJ0ZXh0L3BsYWluIiwKICAgICAgICAiLnhodG1sIiA6ICJ0ZXh0L2h0bWwiLAogICAgICAgICIuY29uZiIgOiAidGV4dC9wbGFpbiIsCiAgICAgICAgIi5wbyIgOiAidGV4dC9wbGFpbiIsCiAgICAgICAgIi5jb2ZmZWUiIDogInRleHQvamF2YXNjcmlwdCIsCiAgICAgICAgIi5zYXNzIiA6ICJ0ZXh0L2NzcyIsCiAgICAgICAgIi5zY3NzIiA6ICJ0ZXh0L2NzcyIsCiAgICAgICAgIi5zdHlsIiA6ICJ0ZXh0L2NzcyIsCiAgICAgICAgIi5tYW5pZmVzdCIgOiAidGV4dC9jYWNoZS1tYW5pZmVzdCIsCiAgICAgICAgIi5zdmciIDogImltYWdlL3N2Zyt4bWwiLAogICAgICAgICIudGlmIiA6ICJpbWFnZS90aWZmIiwKICAgICAgICAiLnRpZmYiIDogImltYWdlL3RpZmYiLAogICAgICAgICIud2JtcCIgOiAiaW1hZ2Uvdm5kLndhcC53Ym1wIiwKICAgICAgICAiLndlYnAiIDogImltYWdlL3dlYnAiLAogICAgICAgICIucG5nIiA6ICJpbWFnZS9wbmciLAogICAgICAgICIuYm1wIiA6ICJpbWFnZS9ibXAiLAogICAgICAgICIuZmF4IiA6ICJpbWFnZS9mYXgiLAogICAgICAgICIuZ2lmIiA6ICJpbWFnZS9naWYiLAogICAgICAgICIuaWNvIiA6ICJpbWFnZS94LWljb24iLAogICAgICAgICIuamZpZiIgOiAiaW1hZ2UvanBlZyIsCiAgICAgICAgIi5qcGciIDogImltYWdlL2pwZWciLAogICAgICAgICIuanBlIiA6ICJpbWFnZS9qcGVnIiwKICAgICAgICAiLmpwZWciIDogImltYWdlL2pwZWciLAogICAgICAgICIuZW90IiA6ICJhcHBsaWNhdGlvbi92bmQubXMtZm9udG9iamVjdCIsCiAgICAgICAgIi53b2ZmIiA6ICJhcHBsaWNhdGlvbi9mb250LXdvZmYiLAogICAgICAgICIud29mZjIiIDogImFwcGxpY2F0aW9uL2ZvbnQtd29mZiIsCiAgICAgICAgIi50dGYiIDogImFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbSIsCiAgICAgICAgIi5jdXIiIDogImFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbSIsDQogICAgICAgIAogICAgICAgICIuY29uZmlnIiA6IG51bGwsDQoJCSIubWRiIjogbnVsbCwNCgkJIi5kYiI6IG51bGwNCiAgICB9DQp9"
+
+__tpack__.define("../../aspserver/configs.json", function(exports, module, require){
+module.exports = {
+    "port": 80,
+    "physicalPath": "../",
+    "virtualPaths": {
+
+    },
+    "modules": {
+        "urlRewrite": "./modules/urlrewrite.js"
+    },
+    "defaultPages": { 
+        "index.htm": true,
+		"index.html": true
+    },
+    "handlers": {
+        "directory": "./handlers/directoryhandler.js",
+        "error": "./handlers/errorhandler.js",
+        ".njs": "./handlers/njshandler.js",
+        "*": "./handlers/staticfilehandler.js"
+    },
+    "urlRewrites": {
+
+    },
+    "mimeTypes": {
+        ".html": "text/html",
+		".htm": "text/html",
+		".css": "text/css",
+		".less": "text/css",
+		".js": "text/javascript",
+		".txt": "text/plain",
+		".xml": "text/xml",
+		".bmp": "image/bmp",
+		".png": "image/png",
+		".jpg": "image/jpg",
+		".jpeg": "image/jpeg",
+		".gif": "image/gif",
+		".ico": "image/icon",
+		".woff": "application/x-font-woff",
+        ".svg": "image/svg+xml",
+        ".swf": "application/x-shockwave-flash",
+
+        ".tpl" : "text/html",
+        ".jsx" : "text/javascript",
+        ".php" : "text/html",
+        ".asp" : "text/html",
+        ".jsp" : "text/jsp",
+        ".txt" : "text/plain",
+        ".json" : "application/json",
+        ".text" : "text/plain",
+        ".md" : "text/plain",
+        ".xhtml" : "text/html",
+        ".conf" : "text/plain",
+        ".po" : "text/plain",
+        ".coffee" : "text/javascript",
+        ".sass" : "text/css",
+        ".scss" : "text/css",
+        ".styl" : "text/css",
+        ".manifest" : "text/cache-manifest",
+        ".svg" : "image/svg+xml",
+        ".tif" : "image/tiff",
+        ".tiff" : "image/tiff",
+        ".wbmp" : "image/vnd.wap.wbmp",
+        ".webp" : "image/webp",
+        ".png" : "image/png",
+        ".bmp" : "image/bmp",
+        ".fax" : "image/fax",
+        ".gif" : "image/gif",
+        ".ico" : "image/x-icon",
+        ".jfif" : "image/jpeg",
+        ".jpg" : "image/jpeg",
+        ".jpe" : "image/jpeg",
+        ".jpeg" : "image/jpeg",
+        ".eot" : "application/vnd.ms-fontobject",
+        ".woff" : "application/font-woff",
+        ".woff2" : "application/font-woff",
+        ".ttf" : "application/octet-stream",
+        ".cur" : "application/octet-stream",
+        
+        ".config" : null,
+		".mdb": null,
+		".db": null
+    }
+};
+});
+
 __tpack__.define("events", function(exports, module, require){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -6977,7 +7062,189 @@ function clone (obj) {
 }
 
 });
-"data:application/json;base64,ewogICJPX1JET05MWSI6IDAsCiAgIk9fV1JPTkxZIjogMSwKICAiT19SRFdSIjogMiwKICAiU19JRk1UIjogNjE0NDAsCiAgIlNfSUZSRUciOiAzMjc2OCwKICAiU19JRkRJUiI6IDE2Mzg0LAogICJTX0lGQ0hSIjogODE5MiwKICAiU19JRkJMSyI6IDI0NTc2LAogICJTX0lGSUZPIjogNDA5NiwKICAiU19JRkxOSyI6IDQwOTYwLAogICJTX0lGU09DSyI6IDQ5MTUyLAogICJPX0NSRUFUIjogNTEyLAogICJPX0VYQ0wiOiAyMDQ4LAogICJPX05PQ1RUWSI6IDEzMTA3MiwKICAiT19UUlVOQyI6IDEwMjQsCiAgIk9fQVBQRU5EIjogOCwKICAiT19ESVJFQ1RPUlkiOiAxMDQ4NTc2LAogICJPX05PRk9MTE9XIjogMjU2LAogICJPX1NZTkMiOiAxMjgsCiAgIk9fU1lNTElOSyI6IDIwOTcxNTIsCiAgIlNfSVJXWFUiOiA0NDgsCiAgIlNfSVJVU1IiOiAyNTYsCiAgIlNfSVdVU1IiOiAxMjgsCiAgIlNfSVhVU1IiOiA2NCwKICAiU19JUldYRyI6IDU2LAogICJTX0lSR1JQIjogMzIsCiAgIlNfSVdHUlAiOiAxNiwKICAiU19JWEdSUCI6IDgsCiAgIlNfSVJXWE8iOiA3LAogICJTX0lST1RIIjogNCwKICAiU19JV09USCI6IDIsCiAgIlNfSVhPVEgiOiAxLAogICJFMkJJRyI6IDcsCiAgIkVBQ0NFUyI6IDEzLAogICJFQUREUklOVVNFIjogNDgsCiAgIkVBRERSTk9UQVZBSUwiOiA0OSwKICAiRUFGTk9TVVBQT1JUIjogNDcsCiAgIkVBR0FJTiI6IDM1LAogICJFQUxSRUFEWSI6IDM3LAogICJFQkFERiI6IDksCiAgIkVCQURNU0ciOiA5NCwKICAiRUJVU1kiOiAxNiwKICAiRUNBTkNFTEVEIjogODksCiAgIkVDSElMRCI6IDEwLAogICJFQ09OTkFCT1JURUQiOiA1MywKICAiRUNPTk5SRUZVU0VEIjogNjEsCiAgIkVDT05OUkVTRVQiOiA1NCwKICAiRURFQURMSyI6IDExLAogICJFREVTVEFERFJSRVEiOiAzOSwKICAiRURPTSI6IDMzLAogICJFRFFVT1QiOiA2OSwKICAiRUVYSVNUIjogMTcsCiAgIkVGQVVMVCI6IDE0LAogICJFRkJJRyI6IDI3LAogICJFSE9TVFVOUkVBQ0giOiA2NSwKICAiRUlEUk0iOiA5MCwKICAiRUlMU0VRIjogOTIsCiAgIkVJTlBST0dSRVNTIjogMzYsCiAgIkVJTlRSIjogNCwKICAiRUlOVkFMIjogMjIsCiAgIkVJTyI6IDUsCiAgIkVJU0NPTk4iOiA1NiwKICAiRUlTRElSIjogMjEsCiAgIkVMT09QIjogNjIsCiAgIkVNRklMRSI6IDI0LAogICJFTUxJTksiOiAzMSwKICAiRU1TR1NJWkUiOiA0MCwKICAiRU1VTFRJSE9QIjogOTUsCiAgIkVOQU1FVE9PTE9ORyI6IDYzLAogICJFTkVURE9XTiI6IDUwLAogICJFTkVUUkVTRVQiOiA1MiwKICAiRU5FVFVOUkVBQ0giOiA1MSwKICAiRU5GSUxFIjogMjMsCiAgIkVOT0JVRlMiOiA1NSwKICAiRU5PREFUQSI6IDk2LAogICJFTk9ERVYiOiAxOSwKICAiRU5PRU5UIjogMiwKICAiRU5PRVhFQyI6IDgsCiAgIkVOT0xDSyI6IDc3LAogICJFTk9MSU5LIjogOTcsCiAgIkVOT01FTSI6IDEyLAogICJFTk9NU0ciOiA5MSwKICAiRU5PUFJPVE9PUFQiOiA0MiwKICAiRU5PU1BDIjogMjgsCiAgIkVOT1NSIjogOTgsCiAgIkVOT1NUUiI6IDk5LAogICJFTk9TWVMiOiA3OCwKICAiRU5PVENPTk4iOiA1NywKICAiRU5PVERJUiI6IDIwLAogICJFTk9URU1QVFkiOiA2NiwKICAiRU5PVFNPQ0siOiAzOCwKICAiRU5PVFNVUCI6IDQ1LAogICJFTk9UVFkiOiAyNSwKICAiRU5YSU8iOiA2LAogICJFT1BOT1RTVVBQIjogMTAyLAogICJFT1ZFUkZMT1ciOiA4NCwKICAiRVBFUk0iOiAxLAogICJFUElQRSI6IDMyLAogICJFUFJPVE8iOiAxMDAsCiAgIkVQUk9UT05PU1VQUE9SVCI6IDQzLAogICJFUFJPVE9UWVBFIjogNDEsCiAgIkVSQU5HRSI6IDM0LAogICJFUk9GUyI6IDMwLAogICJFU1BJUEUiOiAyOSwKICAiRVNSQ0giOiAzLAogICJFU1RBTEUiOiA3MCwKICAiRVRJTUUiOiAxMDEsCiAgIkVUSU1FRE9VVCI6IDYwLAogICJFVFhUQlNZIjogMjYsCiAgIkVXT1VMREJMT0NLIjogMzUsCiAgIkVYREVWIjogMTgsCiAgIlNJR0hVUCI6IDEsCiAgIlNJR0lOVCI6IDIsCiAgIlNJR1FVSVQiOiAzLAogICJTSUdJTEwiOiA0LAogICJTSUdUUkFQIjogNSwKICAiU0lHQUJSVCI6IDYsCiAgIlNJR0lPVCI6IDYsCiAgIlNJR0JVUyI6IDEwLAogICJTSUdGUEUiOiA4LAogICJTSUdLSUxMIjogOSwKICAiU0lHVVNSMSI6IDMwLAogICJTSUdTRUdWIjogMTEsCiAgIlNJR1VTUjIiOiAzMSwKICAiU0lHUElQRSI6IDEzLAogICJTSUdBTFJNIjogMTQsCiAgIlNJR1RFUk0iOiAxNSwKICAiU0lHQ0hMRCI6IDIwLAogICJTSUdDT05UIjogMTksCiAgIlNJR1NUT1AiOiAxNywKICAiU0lHVFNUUCI6IDE4LAogICJTSUdUVElOIjogMjEsCiAgIlNJR1RUT1UiOiAyMiwKICAiU0lHVVJHIjogMTYsCiAgIlNJR1hDUFUiOiAyNCwKICAiU0lHWEZTWiI6IDI1LAogICJTSUdWVEFMUk0iOiAyNiwKICAiU0lHUFJPRiI6IDI3LAogICJTSUdXSU5DSCI6IDI4LAogICJTSUdJTyI6IDIzLAogICJTSUdTWVMiOiAxMiwKICAiU1NMX09QX0FMTCI6IDIxNDc0ODY3MTksCiAgIlNTTF9PUF9BTExPV19VTlNBRkVfTEVHQUNZX1JFTkVHT1RJQVRJT04iOiAyNjIxNDQsCiAgIlNTTF9PUF9DSVBIRVJfU0VSVkVSX1BSRUZFUkVOQ0UiOiA0MTk0MzA0LAogICJTU0xfT1BfQ0lTQ09fQU5ZQ09OTkVDVCI6IDMyNzY4LAogICJTU0xfT1BfQ09PS0lFX0VYQ0hBTkdFIjogODE5MiwKICAiU1NMX09QX0NSWVBUT1BST19UTFNFWFRfQlVHIjogMjE0NzQ4MzY0OCwKICAiU1NMX09QX0RPTlRfSU5TRVJUX0VNUFRZX0ZSQUdNRU5UUyI6IDIwNDgsCiAgIlNTTF9PUF9FUEhFTUVSQUxfUlNBIjogMjA5NzE1MiwKICAiU1NMX09QX0xFR0FDWV9TRVJWRVJfQ09OTkVDVCI6IDQsCiAgIlNTTF9PUF9NSUNST1NPRlRfQklHX1NTTFYzX0JVRkZFUiI6IDMyLAogICJTU0xfT1BfTUlDUk9TT0ZUX1NFU1NfSURfQlVHIjogMSwKICAiU1NMX09QX01TSUVfU1NMVjJfUlNBX1BBRERJTkciOiA2NCwKICAiU1NMX09QX05FVFNDQVBFX0NBX0ROX0JVRyI6IDUzNjg3MDkxMiwKICAiU1NMX09QX05FVFNDQVBFX0NIQUxMRU5HRV9CVUciOiAyLAogICJTU0xfT1BfTkVUU0NBUEVfREVNT19DSVBIRVJfQ0hBTkdFX0JVRyI6IDEwNzM3NDE4MjQsCiAgIlNTTF9PUF9ORVRTQ0FQRV9SRVVTRV9DSVBIRVJfQ0hBTkdFX0JVRyI6IDgsCiAgIlNTTF9PUF9OT19DT01QUkVTU0lPTiI6IDEzMTA3MiwKICAiU1NMX09QX05PX1FVRVJZX01UVSI6IDQwOTYsCiAgIlNTTF9PUF9OT19TRVNTSU9OX1JFU1VNUFRJT05fT05fUkVORUdPVElBVElPTiI6IDY1NTM2LAogICJTU0xfT1BfTk9fU1NMdjIiOiAxNjc3NzIxNiwKICAiU1NMX09QX05PX1NTTHYzIjogMzM1NTQ0MzIsCiAgIlNTTF9PUF9OT19USUNLRVQiOiAxNjM4NCwKICAiU1NMX09QX05PX1RMU3YxIjogNjcxMDg4NjQsCiAgIlNTTF9PUF9OT19UTFN2MV8xIjogMjY4NDM1NDU2LAogICJTU0xfT1BfTk9fVExTdjFfMiI6IDEzNDIxNzcyOCwKICAiU1NMX09QX1BLQ1MxX0NIRUNLXzEiOiAwLAogICJTU0xfT1BfUEtDUzFfQ0hFQ0tfMiI6IDAsCiAgIlNTTF9PUF9TSU5HTEVfREhfVVNFIjogMTA0ODU3NiwKICAiU1NMX09QX1NJTkdMRV9FQ0RIX1VTRSI6IDUyNDI4OCwKICAiU1NMX09QX1NTTEVBWV8wODBfQ0xJRU5UX0RIX0JVRyI6IDEyOCwKICAiU1NMX09QX1NTTFJFRjJfUkVVU0VfQ0VSVF9UWVBFX0JVRyI6IDE2LAogICJTU0xfT1BfVExTX0JMT0NLX1BBRERJTkdfQlVHIjogNTEyLAogICJTU0xfT1BfVExTX0Q1X0JVRyI6IDI1NiwKICAiU1NMX09QX1RMU19ST0xMQkFDS19CVUciOiA4Mzg4NjA4LAogICJOUE5fRU5BQkxFRCI6IDEKfQo="
+
+__tpack__.define("constants", function(exports, module, require){
+module.exports = {
+  "O_RDONLY": 0,
+  "O_WRONLY": 1,
+  "O_RDWR": 2,
+  "S_IFMT": 61440,
+  "S_IFREG": 32768,
+  "S_IFDIR": 16384,
+  "S_IFCHR": 8192,
+  "S_IFBLK": 24576,
+  "S_IFIFO": 4096,
+  "S_IFLNK": 40960,
+  "S_IFSOCK": 49152,
+  "O_CREAT": 512,
+  "O_EXCL": 2048,
+  "O_NOCTTY": 131072,
+  "O_TRUNC": 1024,
+  "O_APPEND": 8,
+  "O_DIRECTORY": 1048576,
+  "O_NOFOLLOW": 256,
+  "O_SYNC": 128,
+  "O_SYMLINK": 2097152,
+  "S_IRWXU": 448,
+  "S_IRUSR": 256,
+  "S_IWUSR": 128,
+  "S_IXUSR": 64,
+  "S_IRWXG": 56,
+  "S_IRGRP": 32,
+  "S_IWGRP": 16,
+  "S_IXGRP": 8,
+  "S_IRWXO": 7,
+  "S_IROTH": 4,
+  "S_IWOTH": 2,
+  "S_IXOTH": 1,
+  "E2BIG": 7,
+  "EACCES": 13,
+  "EADDRINUSE": 48,
+  "EADDRNOTAVAIL": 49,
+  "EAFNOSUPPORT": 47,
+  "EAGAIN": 35,
+  "EALREADY": 37,
+  "EBADF": 9,
+  "EBADMSG": 94,
+  "EBUSY": 16,
+  "ECANCELED": 89,
+  "ECHILD": 10,
+  "ECONNABORTED": 53,
+  "ECONNREFUSED": 61,
+  "ECONNRESET": 54,
+  "EDEADLK": 11,
+  "EDESTADDRREQ": 39,
+  "EDOM": 33,
+  "EDQUOT": 69,
+  "EEXIST": 17,
+  "EFAULT": 14,
+  "EFBIG": 27,
+  "EHOSTUNREACH": 65,
+  "EIDRM": 90,
+  "EILSEQ": 92,
+  "EINPROGRESS": 36,
+  "EINTR": 4,
+  "EINVAL": 22,
+  "EIO": 5,
+  "EISCONN": 56,
+  "EISDIR": 21,
+  "ELOOP": 62,
+  "EMFILE": 24,
+  "EMLINK": 31,
+  "EMSGSIZE": 40,
+  "EMULTIHOP": 95,
+  "ENAMETOOLONG": 63,
+  "ENETDOWN": 50,
+  "ENETRESET": 52,
+  "ENETUNREACH": 51,
+  "ENFILE": 23,
+  "ENOBUFS": 55,
+  "ENODATA": 96,
+  "ENODEV": 19,
+  "ENOENT": 2,
+  "ENOEXEC": 8,
+  "ENOLCK": 77,
+  "ENOLINK": 97,
+  "ENOMEM": 12,
+  "ENOMSG": 91,
+  "ENOPROTOOPT": 42,
+  "ENOSPC": 28,
+  "ENOSR": 98,
+  "ENOSTR": 99,
+  "ENOSYS": 78,
+  "ENOTCONN": 57,
+  "ENOTDIR": 20,
+  "ENOTEMPTY": 66,
+  "ENOTSOCK": 38,
+  "ENOTSUP": 45,
+  "ENOTTY": 25,
+  "ENXIO": 6,
+  "EOPNOTSUPP": 102,
+  "EOVERFLOW": 84,
+  "EPERM": 1,
+  "EPIPE": 32,
+  "EPROTO": 100,
+  "EPROTONOSUPPORT": 43,
+  "EPROTOTYPE": 41,
+  "ERANGE": 34,
+  "EROFS": 30,
+  "ESPIPE": 29,
+  "ESRCH": 3,
+  "ESTALE": 70,
+  "ETIME": 101,
+  "ETIMEDOUT": 60,
+  "ETXTBSY": 26,
+  "EWOULDBLOCK": 35,
+  "EXDEV": 18,
+  "SIGHUP": 1,
+  "SIGINT": 2,
+  "SIGQUIT": 3,
+  "SIGILL": 4,
+  "SIGTRAP": 5,
+  "SIGABRT": 6,
+  "SIGIOT": 6,
+  "SIGBUS": 10,
+  "SIGFPE": 8,
+  "SIGKILL": 9,
+  "SIGUSR1": 30,
+  "SIGSEGV": 11,
+  "SIGUSR2": 31,
+  "SIGPIPE": 13,
+  "SIGALRM": 14,
+  "SIGTERM": 15,
+  "SIGCHLD": 20,
+  "SIGCONT": 19,
+  "SIGSTOP": 17,
+  "SIGTSTP": 18,
+  "SIGTTIN": 21,
+  "SIGTTOU": 22,
+  "SIGURG": 16,
+  "SIGXCPU": 24,
+  "SIGXFSZ": 25,
+  "SIGVTALRM": 26,
+  "SIGPROF": 27,
+  "SIGWINCH": 28,
+  "SIGIO": 23,
+  "SIGSYS": 12,
+  "SSL_OP_ALL": 2147486719,
+  "SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION": 262144,
+  "SSL_OP_CIPHER_SERVER_PREFERENCE": 4194304,
+  "SSL_OP_CISCO_ANYCONNECT": 32768,
+  "SSL_OP_COOKIE_EXCHANGE": 8192,
+  "SSL_OP_CRYPTOPRO_TLSEXT_BUG": 2147483648,
+  "SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS": 2048,
+  "SSL_OP_EPHEMERAL_RSA": 2097152,
+  "SSL_OP_LEGACY_SERVER_CONNECT": 4,
+  "SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER": 32,
+  "SSL_OP_MICROSOFT_SESS_ID_BUG": 1,
+  "SSL_OP_MSIE_SSLV2_RSA_PADDING": 64,
+  "SSL_OP_NETSCAPE_CA_DN_BUG": 536870912,
+  "SSL_OP_NETSCAPE_CHALLENGE_BUG": 2,
+  "SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG": 1073741824,
+  "SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG": 8,
+  "SSL_OP_NO_COMPRESSION": 131072,
+  "SSL_OP_NO_QUERY_MTU": 4096,
+  "SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION": 65536,
+  "SSL_OP_NO_SSLv2": 16777216,
+  "SSL_OP_NO_SSLv3": 33554432,
+  "SSL_OP_NO_TICKET": 16384,
+  "SSL_OP_NO_TLSv1": 67108864,
+  "SSL_OP_NO_TLSv1_1": 268435456,
+  "SSL_OP_NO_TLSv1_2": 134217728,
+  "SSL_OP_PKCS1_CHECK_1": 0,
+  "SSL_OP_PKCS1_CHECK_2": 0,
+  "SSL_OP_SINGLE_DH_USE": 1048576,
+  "SSL_OP_SINGLE_ECDH_USE": 524288,
+  "SSL_OP_SSLEAY_080_CLIENT_DH_BUG": 128,
+  "SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG": 16,
+  "SSL_OP_TLS_BLOCK_PADDING_BUG": 512,
+  "SSL_OP_TLS_D5_BUG": 256,
+  "SSL_OP_TLS_ROLLBACK_BUG": 8388608,
+  "NPN_ENABLED": 1
+}
+;
+});
+
 __tpack__.define("../../chokidar/node_modules/graceful-fs/polyfills.js", function(exports, module, require){
 var process = __tpack__.require("process");
 var fs = require("../../chokidar/node_modules/graceful-fs/fs.js")
@@ -11963,7 +12230,197 @@ function readdir(opts, callback1, callback2) {
 module.exports = readdir;
 
 });
-"data:application/json;base64,WwoJIjNkcyIsCgkiM2cyIiwKCSIzZ3AiLAoJIjd6IiwKCSJhIiwKCSJhYWMiLAoJImFkcCIsCgkiYWkiLAoJImFpZiIsCgkiYXBrIiwKCSJhciIsCgkiYXNmIiwKCSJhdSIsCgkiYXZpIiwKCSJiYWsiLAoJImJpbiIsCgkiYmsiLAoJImJtcCIsCgkiYnRpZiIsCgkiYnoyIiwKCSJjYWIiLAoJImNhZiIsCgkiY2dtIiwKCSJjbXgiLAoJImNwaW8iLAoJImNyMiIsCgkiZGF0IiwKCSJkZWIiLAoJImRqdnUiLAoJImRsbCIsCgkiZG1nIiwKCSJkbmciLAoJImRvYyIsCgkiZG9jeCIsCgkiZHJhIiwKCSJEU19TdG9yZSIsCgkiZHNrIiwKCSJkdHMiLAoJImR0c2hkIiwKCSJkdmIiLAoJImR3ZyIsCgkiZHhmIiwKCSJlY2VscDQ4MDAiLAoJImVjZWxwNzQ3MCIsCgkiZWNlbHA5NjAwIiwKCSJlZ2ciLAoJImVvbCIsCgkiZW90IiwKCSJlcHViIiwKCSJleGUiLAoJImY0diIsCgkiZmJzIiwKCSJmaCIsCgkiZmxhIiwKCSJmbGFjIiwKCSJmbGkiLAoJImZsdiIsCgkiZnB4IiwKCSJmc3QiLAoJImZ2dCIsCgkiZzMiLAoJImdpZiIsCgkiZ3oiLAoJImgyNjEiLAoJImgyNjMiLAoJImgyNjQiLAoJImljbyIsCgkiaWVmIiwKCSJpbWciLAoJImlwYSIsCgkiaXNvIiwKCSJqYXIiLAoJImpwZWciLAoJImpwZyIsCgkianBndiIsCgkianBtIiwKCSJqeHIiLAoJImt0eCIsCgkibHZwIiwKCSJseiIsCgkibHptYSIsCgkibHpvIiwKCSJtM3UiLAoJIm00YSIsCgkibTR2IiwKCSJtYXIiLAoJIm1kaSIsCgkibWlkIiwKCSJtajIiLAoJIm1rYSIsCgkibWt2IiwKCSJtbXIiLAoJIm1uZyIsCgkibW92IiwKCSJtb3ZpZSIsCgkibXAzIiwKCSJtcDQiLAoJIm1wNGEiLAoJIm1wZWciLAoJIm1wZyIsCgkibXBnYSIsCgkibXh1IiwKCSJuZWYiLAoJIm5weCIsCgkibyIsCgkib2dhIiwKCSJvZ2ciLAoJIm9ndiIsCgkib3RmIiwKCSJwYm0iLAoJInBjeCIsCgkicGRmIiwKCSJwZWEiLAoJInBnbSIsCgkicGljIiwKCSJwbmciLAoJInBubSIsCgkicHBtIiwKCSJwc2QiLAoJInB5YSIsCgkicHljIiwKCSJweW8iLAoJInB5diIsCgkicXQiLAoJInJhciIsCgkicmFzIiwKCSJyYXciLAoJInJnYiIsCgkicmlwIiwKCSJybGMiLAoJInJ6IiwKCSJzM20iLAoJInM3eiIsCgkic2NwdCIsCgkic2dpIiwKCSJzaGFyIiwKCSJzaWwiLAoJInNtdiIsCgkic28iLAoJInN1YiIsCgkic3dmIiwKCSJ0YXIiLAoJInRiejIiLAoJInRnYSIsCgkidGd6IiwKCSJ0aWYiLAoJInRpZmYiLAoJInRseiIsCgkidHMiLAoJInR0ZiIsCgkidXZoIiwKCSJ1dmkiLAoJInV2bSIsCgkidXZwIiwKCSJ1dnMiLAoJInV2dSIsCgkidml2IiwKCSJ2b2IiLAoJIndhciIsCgkid2F2IiwKCSJ3YXgiLAoJIndibXAiLAoJIndkcCIsCgkid2ViYSIsCgkid2VibSIsCgkid2VicCIsCgkid2hsIiwKCSJ3bSIsCgkid21hIiwKCSJ3bXYiLAoJIndteCIsCgkid29mZiIsCgkid29mZjIiLAoJInd2eCIsCgkieGJtIiwKCSJ4aWYiLAoJInhtIiwKCSJ4cGkiLAoJInhwbSIsCgkieHdkIiwKCSJ4eiIsCgkieiIsCgkiemlwIiwKCSJ6aXB4IgpdCg=="
+
+__tpack__.define("../../chokidar/node_modules/binary-extensions/binary-extensions.json", function(exports, module, require){
+module.exports = [
+	"3ds",
+	"3g2",
+	"3gp",
+	"7z",
+	"a",
+	"aac",
+	"adp",
+	"ai",
+	"aif",
+	"apk",
+	"ar",
+	"asf",
+	"au",
+	"avi",
+	"bak",
+	"bin",
+	"bk",
+	"bmp",
+	"btif",
+	"bz2",
+	"cab",
+	"caf",
+	"cgm",
+	"cmx",
+	"cpio",
+	"cr2",
+	"dat",
+	"deb",
+	"djvu",
+	"dll",
+	"dmg",
+	"dng",
+	"doc",
+	"docx",
+	"dra",
+	"DS_Store",
+	"dsk",
+	"dts",
+	"dtshd",
+	"dvb",
+	"dwg",
+	"dxf",
+	"ecelp4800",
+	"ecelp7470",
+	"ecelp9600",
+	"egg",
+	"eol",
+	"eot",
+	"epub",
+	"exe",
+	"f4v",
+	"fbs",
+	"fh",
+	"fla",
+	"flac",
+	"fli",
+	"flv",
+	"fpx",
+	"fst",
+	"fvt",
+	"g3",
+	"gif",
+	"gz",
+	"h261",
+	"h263",
+	"h264",
+	"ico",
+	"ief",
+	"img",
+	"ipa",
+	"iso",
+	"jar",
+	"jpeg",
+	"jpg",
+	"jpgv",
+	"jpm",
+	"jxr",
+	"ktx",
+	"lvp",
+	"lz",
+	"lzma",
+	"lzo",
+	"m3u",
+	"m4a",
+	"m4v",
+	"mar",
+	"mdi",
+	"mid",
+	"mj2",
+	"mka",
+	"mkv",
+	"mmr",
+	"mng",
+	"mov",
+	"movie",
+	"mp3",
+	"mp4",
+	"mp4a",
+	"mpeg",
+	"mpg",
+	"mpga",
+	"mxu",
+	"nef",
+	"npx",
+	"o",
+	"oga",
+	"ogg",
+	"ogv",
+	"otf",
+	"pbm",
+	"pcx",
+	"pdf",
+	"pea",
+	"pgm",
+	"pic",
+	"png",
+	"pnm",
+	"ppm",
+	"psd",
+	"pya",
+	"pyc",
+	"pyo",
+	"pyv",
+	"qt",
+	"rar",
+	"ras",
+	"raw",
+	"rgb",
+	"rip",
+	"rlc",
+	"rz",
+	"s3m",
+	"s7z",
+	"scpt",
+	"sgi",
+	"shar",
+	"sil",
+	"smv",
+	"so",
+	"sub",
+	"swf",
+	"tar",
+	"tbz2",
+	"tga",
+	"tgz",
+	"tif",
+	"tiff",
+	"tlz",
+	"ts",
+	"ttf",
+	"uvh",
+	"uvi",
+	"uvm",
+	"uvp",
+	"uvs",
+	"uvu",
+	"viv",
+	"vob",
+	"war",
+	"wav",
+	"wax",
+	"wbmp",
+	"wdp",
+	"weba",
+	"webm",
+	"webp",
+	"whl",
+	"wm",
+	"wma",
+	"wmv",
+	"wmx",
+	"woff",
+	"woff2",
+	"wvx",
+	"xbm",
+	"xif",
+	"xm",
+	"xpi",
+	"xpm",
+	"xwd",
+	"xz",
+	"z",
+	"zip",
+	"zipx"
+]
+;
+});
+
 __tpack__.define("../../chokidar/node_modules/is-binary-path/index.js", function(exports, module, require){
 'use strict';
 var path = require("path");
@@ -18218,7 +18675,7 @@ Builder.prototype = {
      * @returns {String} 返回名称。格式如：“a/b.jpg”
      */
     getName: function (path) {
-        return Path.relative(this.srcPath, path).replace(/\\/g, "/");
+        return Path.isAbsolute(path) ? Path.relative(this.srcPath, path).replace(/\\/g, "/") : path;
     },
 
     /**
@@ -18227,7 +18684,7 @@ Builder.prototype = {
      * @returns {String} 返回绝对路径。格式如：“E:\www\a\b.jpg”
      */
     getPath: function (name) {
-        return Path.join(this.srcPath, name);
+        return Path.isAbsolute(name) ? name : Path.join(this.srcPath, name);
     },
 
     /**
@@ -18786,15 +19243,15 @@ Builder.prototype = {
      * @param {String|RegExp|Function} ... 要获取的文件或文件夹路径。可以是通配字符串、正则表达式、函数、空(表示不符合任何条件)或以上过滤器组合的数组。
      * @returns {Array} 返回名称数组。
      */
-    findFiles: function () {
+    getFiles: function () {
         if (arguments.length === 0) {
             var result = [];
-            for (var key in this.files) {
-                result.push(this.files[key].srcName);
-            }
+			this.walk(function(name){
+				result.push(name);
+			});
             return result;
         }
-        return new BuildRule(this, arguments).findFiles();
+        return new BuildRule(this, arguments).getFiles();
     },
 
     /**
@@ -18911,7 +19368,7 @@ BuildFile.prototype = {
      * @type {String}
      */
     get srcPath() {
-        return Path.join(this.builder.srcPath, this.srcName);
+        return Path.isAbsolute(this.srcName) ? this.srcName : Path.join(this.builder.srcPath, this.srcName);
     },
 
     /**
@@ -18925,7 +19382,7 @@ BuildFile.prototype = {
      * @type {String}
      */
     get destPath() {
-        return this.destName && Path.join(this.builder.destPath, this.destName);
+        return this.destName && (Path.isAbsolute(this.destName) ? this.destName : Path.join(this.builder.destPath, this.destName));
     },
 
     /**
@@ -19475,11 +19932,6 @@ function BuildRule(builder, filters) {
     this.ignores = [];
     this.processors = [];
     this.processorOptions = [];
-
-    /**
-     * 判断当前规则是否是一次性规则。
-     */
-    this.runOnce = this.filters.length === 0;
 }
 
 BuildRule.prototype = {
@@ -19487,6 +19939,14 @@ BuildRule.prototype = {
     // #region 核心
 
     constructor: BuildRule,
+	
+    /**
+     * 判断当前规则是否是一次性规则。
+	 * @type {Boolean}
+     */
+	get runOnce(){
+		return this.filters.length === 0;
+	},
 
     /**
      * 为当前规则添加一个忽略项。
@@ -19508,16 +19968,17 @@ BuildRule.prototype = {
     pipe: function (processor, processorOptions) {
         // 只执行一次则直接创建为一次性的规则。
         if (processor.runOnce && !this.runOnce) {
-            // 删除空规则。
-            if (this.processors.length === 0) {
-                var index = this.builder.rules.indexOf(this);
-                index >= 0 && this.builder.rules.splice(index, 1);
-            }
+			
             // 加入新的一次性规则。
-            var newRule = new BuildRule(this.builder, this.filters);
-            newRule.runOnce = true;
-            this.builder.rules.push(newRule);
-            return newRule.pipe(processor, processorOptions);
+            var newRule = this.builder.src().pipe(processor, processorOptions);
+			newRule.files = [];
+			
+			// 原规则加入一个负责收集文件的处理器。
+			this.pipe(function(file){
+				newRule.files.push(file);
+			});
+			
+            return newRule;
         }
         this.processors.push(processor);
         this.processorOptions.push(processorOptions);
@@ -19605,15 +20066,14 @@ BuildRule.prototype = {
      * 获取匹配当前规则的所有文件。
      * @returns {Array} 返回文件名称数组。
      */
-    findFiles: function () {
+    getFiles: function () {
         var result = [];
-        var files = this.builder.files;
-        for (var key in files) {
-            var file = files[key];
-            if (this.match(file.name) !== null) {
-                result.push(file.srcName);
+		var rule = this;
+		this.builder.walk(function(name){
+			if (rule.match(name) !== null) {
+                result.push(name);
             }
-        }
+		});
         return result;
     },
 

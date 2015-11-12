@@ -9,7 +9,7 @@ var __tpack__ = __tpack__ || {
 	require: function (moduleName, callback) {
 		var module = __tpack__.modules[moduleName];
 		if (!module) {
-			throw new Error("Can not find module: " + moduleName);
+			throw new Error("Cannot find module '" + moduleName + "'");
 		}
 		if (!module.loaded) {
 			module.loaded = true;
