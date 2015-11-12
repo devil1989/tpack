@@ -11,16 +11,7 @@ TPack 是一个使用 NodeJS 开发的项目构建工具。
 
 3. 下载 TPack 常用插件：       
      
-    > npm install tpack-assets           
-    > npm install tpack-autoprefixer           
-    > npm install tpack-babel           
-    > npm install tpack-clean-css           
-    > npm install tpack-coffee-script           
-    > npm install tpack-concat           
-    > npm install tpack-less           
-    > npm install tpack-requirejs           
-    > npm install tpack-sass           
-    > npm install tpack-uglify-js           
+    > npm install -g tpack-assets tpack-autoprefixer tpack-babel tpack-clean-css tpack-coffee-script tpack-concat tpack-less tpack-requirejs tpack-sass tpack-uglify-js
  
 ## 首次使用
 
@@ -84,17 +75,30 @@ TPack 自带 Web 服务器：
         tpack.src("*.js").pipe(require('tpack-uglify-js'));
     }
 
-## TPack 和 Gulp/Grunt 的区别
+## 比较
+
+### TPack 和 Gulp/Grunt 的区别
 
 TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
 
 1. TPack 能跟踪文件变化。比如 html 引用了 a.css，当 a.css 被重命名为 a_20050801.css 时，html 文件会自动更新。
-2. 只需写一遍配置，即可同时支持发布、监听、服务器三种模式。`tpack.config.js` 不会随着项目变大导致难以维护。
+2. 只需写一遍配置，即可同时用于发布、监听、服务器。`tpack.config.js` 不会随着项目变大而导致难以维护。
 3. 只需全局安装一遍，不需要本地安装。
+
+### TPack 和 Webpack 的区别
+
+TPack 通过插件 `tpack-assets`，提供了和 Webpack 类似的模块化方案。
+
+1. 配置更直观。 Webpack 需要指定每个目标文件怎么生成过来。 TPack 则需要指定每个源如何生成。 
+2. 除了 watch，TPack 还支持更稳定的服务器方式。
+Webpack 要求 html 引用生成好的 js 文件，TPack 则建议 html 引用源文件，比如 html 直接引用 less。
+这样可以确保每次 html 引用的都是生成好的最新版。
+3. 除了 require，TPack 支持简单的 #include。
+4. Webpack 需要配置文件，配置会随着项目变大导致难以维护。TPack 则不需要，打包配置和其它配置是共享的。
 
 ## 项目实战
 
-## 1. HTML 内联
+### 1. HTML 内联
 
 通过 TPack 的插件 `tpack-assets`，可以轻松实现 HTML 内联语法，用法如下：
 
@@ -102,7 +106,7 @@ TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
 
 更多说明和用法见 [HTML处理](https://github.com/tpack/tpack-assets/wiki/html)
 
-## 2. JS 模块化
+### 2. JS 模块化
 
 通过 TPack 的插件 `tpack-assets`，可以实现 CommonJs 模块化方案。
 通过 TPack 的插件 `tpack-requirejs`，可以实现 AMD 模块化方案。
@@ -124,7 +128,7 @@ TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
 
 更多说明和用法见 [Js 模块化](https://github.com/tpack/tpack-assets/wiki/js)
 
-## 3. 代码压缩和时间戳
+### 3. 代码压缩和时间戳
 
 如果您有一个现成的 PHP 等项目，只需要压缩代码、加时间戳等功能，可以使用 `tpack-web` 插件。
 
@@ -135,12 +139,12 @@ TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
 
 发布完成后，项目中所有文件都会拷贝到 ../build/，并作了以下处理：
 
-1. 检查 Css/Js/Html 等语法错误。
-2. 预编译 Less/Sass、Ee6/Jsx、CoffeeScript 等自定义语法。
+1. 检查 css/js/html 等语法错误。
+2. 预编译 less/sass、ee6/jsx、coffee-script 等自定义语法。
 3. 打包 AMD/CMD(require) 代码和 #include 指令。
-4. 生成 Css 雪碧图。
-5. 压缩 Css/Js 文件。
-6. 为 Css/Js 引用路径追加 MD5 以避免缓存。
+4. 生成 css 雪碧图。
+5. 压缩 css/js 文件。
+6. 为 css/js 引用路径追加 MD5 以避免缓存。
 
 更多说明和用法见 [TPack-Web 主页](https://github.com/tpack/tpack-web)
 

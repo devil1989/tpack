@@ -24,6 +24,7 @@ tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 tpack.src("*").pipe(require("tpack-assets"), {
     paths: ["libs"],
     extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
+	//n    odejs: true
    // resolveUrl: tpack.cmd === "server" ? false : true
 });
 
@@ -78,7 +79,4 @@ if (tpack.cmd === "build") {
 
 }
 
-// 当执行 node tpack.config.js 时，负责直接执行任务。
-if(process.mainModule === module) {
-	tpack.run();
-}
+tpack.run();

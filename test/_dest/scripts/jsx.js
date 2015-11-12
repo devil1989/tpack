@@ -19,14 +19,23 @@ var __tpack__ = __tpack__ || {
 	}
 };
 
+__tpack__.define("scripts/blog.js", function(exports, module, require){
+"use strict";
+
+/* 这里放全部详情页的公共代码 */
+if(a>2){}
+
+
+});
+
 __tpack__.define("scripts/jsx.jsx", function(exports, module, require){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _aJs = require("a.js");
+var _blogJs = require("scripts/blog.js");
 
-var _aJs2 = _interopRequireDefault(_aJs);
+var _blogJs2 = _interopRequireDefault(_blogJs);
 });
 
 __tpack__.require("scripts/jsx.jsx");

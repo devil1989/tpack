@@ -2,31 +2,34 @@
 
 var defaultTpackConfig = "tpack.config.js";
 
-var FS = require("fs");
-var Path = require('path');
-var tpack = module.exports = require('../lib/index.js');
-
 main();
 
 function main() {
-    
+                
+    var Path = require('path');
+
+    // 优先考虑使用本地安装的 tpack 版本。
+    try {
+        var localCli = require.resolve(Path.resolve("node_modules/tpack/bin/tpack-cli.js"));
+        if(__filename !== localCli) {
+            return module.exports = require(localCli);
+        }
+    } catch(e) {}
+
+    var tpack = module.exports = require('../lib/index.js');
+
     // 解析命令行参数。
 	var options = tpack.options;
 
     // -v, -version, --version
     if (options.v || options.version || options["-version"]) {
         console.log(require('../package.json').version);
-        return;
+        return 0;
     }
 
     // -cwd, --cwd
     if (options.cwd || options["-cwd"]) {
         process.cwd(options.cwd || options["-cwd"]);
-    }
-    
-    // -h, -help, -?, --help
-    if (options.h || options.help || options["?"]) {
-        tpack.cmd = 'help';
     }
     
     // -config, --config, 
@@ -39,14 +42,17 @@ function main() {
     }
 
     // 执行 tpack.config.js
-    if (FS.existsSync(options.config)) {
+    if (require("fs").existsSync(options.config)) {
         require(options.config);
-    } else if (!tpack.builder.rules.length && (tpack.cmd === "build" || tpack.cmd === "watch")) {
-        tpack.builder.error("Cannot find '{0}'. Use 'tpack init' to create it.", options.config);
-        return;
+        return 0;
     }
     
-    // 驱动主任务。 
+    if (!tpack.builder.rules.length && (tpack.cmd === "build" || tpack.cmd === "watch")) {
+        tpack.builder.error("Cannot find '{0}'. Use 'tpack init' to create it.", options.config);
+        return 1;
+    }
+    
     tpack.run();
-
+    return 0;
+    
 }

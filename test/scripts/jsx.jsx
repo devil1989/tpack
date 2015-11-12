@@ -1,2 +1,2 @@
 
-import A from 'a.js'
+import A from './blog.js'
