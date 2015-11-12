@@ -25,8 +25,14 @@ TPack 是一个使用 NodeJS 开发的项目构建工具。
             file.content += "哈哈";
         })
         .dest("$1.out");
+		
+	tpack.run();
     
 ### 2. 发布项目
+
+	> node tpack.config.js build
+	
+如果您已全局安装 tpack，也可以直接使用：
 
     > tpack build
 
@@ -75,6 +81,8 @@ TPack 自带 Web 服务器：
         tpack.src("*.js").pipe(require('tpack-uglify-js'));
     }
 
+	tpack.run();
+    
 ## 比较
 
 ### TPack 和 Gulp/Grunt 的区别
