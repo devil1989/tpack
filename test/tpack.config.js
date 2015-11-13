@@ -21,7 +21,7 @@ tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
 
-tpack.src("*").pipe(require("tpack-assets"), {
+tpack.src("*.html", "*.htm", "*.js", "*.css").pipe(require("tpack-assets"), {
     paths: ["libs"],
     extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
 	//n    odejs: true
