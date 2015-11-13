@@ -24,3 +24,5 @@ if(tpack.cmd === "build") {
     tpack.src("*.css").pipe(require('tpack-clean-css'));
     tpack.src("*.js").pipe(require('tpack-uglify-js'));
 }
+
+tpack.run();

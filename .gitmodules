@@ -34,3 +34,6 @@
 [submodule "node_modules/tpack-node-markdown"]
 	path = node_modules/tpack-node-markdown
 	url = https://github.com/tpack/tpack-node-markdown.git
+[submodule "node_modules/tpack-node-sass"]
+	path = node_modules/tpack-node-sass
+	url = https://github.com/tpack/tpack-node-sass.git
