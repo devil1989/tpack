@@ -17,8 +17,8 @@
 	path = node_modules/tpack-less
 	url = https://github.com/tpack/tpack-less.git
 [submodule "node_modules/tpack-sass"]
-	path = node_modules/tpack-sass
-	url = https://github.com/tpack/tpack-sass.git
+	path = node_modules/tpack-node-sass
+	url = https://github.com/tpack/tpack-node-sass.git
 [submodule "node_modules/tpack-uglify-js"]
 	path = node_modules/tpack-uglify-js
 	url = https://github.com/tpack/tpack-uglify-js.git
@@ -31,3 +31,6 @@
 [submodule "node_modules/tpack-requirejs"]
 	path = node_modules/tpack-requirejs
 	url = https://github.com/tpack/tpack-requirejs.git
+[submodule "node_modules/tpack-node-markdown"]
+	path = node_modules/tpack-node-markdown
+	url = https://github.com/tpack/tpack-node-markdown.git

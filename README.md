@@ -11,7 +11,7 @@ TPack 是一个使用 NodeJS 开发的项目构建工具。
 
 3. 下载 TPack 常用插件：       
      
-    > npm install -g tpack-assets tpack-autoprefixer tpack-babel tpack-clean-css tpack-coffee-script tpack-concat tpack-less tpack-requirejs tpack-sass tpack-uglify-js
+    > npm install -g tpack-assets tpack-autoprefixer tpack-babel tpack-clean-css tpack-coffee-script tpack-concat tpack-less tpack-requirejs tpack-node-sass tpack-uglify-js tpack-node-markdown
  
 ## 首次使用
 

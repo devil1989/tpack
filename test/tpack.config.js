@@ -16,10 +16,11 @@ tpack.ignore(".*", "_*", "$*", "*~", "tpack*");
 tpack.ignore("/libs", "/include");
 
 // 预编译。
-tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
+tpack.src("*.scss", "*.sass").pipe(require("tpack-node-sass")).dest("$1.css");
 tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
 tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
 tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
+tpack.src("*.md", "*.markdown").pipe(require("tpack-node-markdown")).dest("$1.html");
 
 tpack.src("*.html", "*.htm", "*.js", "*.css").pipe(require("tpack-assets"), {
     paths: ["libs"],
