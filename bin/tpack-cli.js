@@ -43,7 +43,7 @@ function main() {
 
     // 执行 tpack.config.js
     if (require("fs").existsSync(options.config)) {
-        require(options.config);
+		require(options.config);
         return 0;
     }
     
