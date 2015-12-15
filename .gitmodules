@@ -37,3 +37,6 @@
 [submodule "node_modules/tpack-node-sass"]
 	path = node_modules/tpack-node-sass
 	url = https://github.com/tpack/tpack-node-sass.git
+[submodule "node_modules/tpack-html-minifier"]
+	path = node_modules/tpack-html-minifier
+	url = https://github.com/tpack/tpack-html-minifier.git
