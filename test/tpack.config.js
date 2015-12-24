@@ -15,6 +15,11 @@ tpack.ignore(".*", "_*", "$*", "*~", "tpack*");
 // 忽略 libs 和 include 目录。
 tpack.ignore("/libs", "/include");
 
+tpack.src("README.md").pipe(function(file, options){
+	console.log(options);
+	file.addError("tpack-uglify-js", 0, "原因");
+}, {a:1})
+
 // 预编译。
 tpack.src("*.scss", "*.sass").pipe(require("tpack-node-sass")).dest("$1.css");
 tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
