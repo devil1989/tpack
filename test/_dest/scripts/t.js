@@ -3073,6 +3073,43 @@ if (!Object.assign) {
 
 // #endregion
 
+// #region @Object.clone
+
+/**
+ * 深拷贝一个对象，拷贝的对象和原对象无引用关系。
+ * @param {Object} obj 要复制的对象。
+ * @returns {Object} 返回新对象。
+ * @remark
+ * > #### !不拷贝函数
+ * > 考虑项目实际需求和性能，`Object.clone` 不拷贝函数，因此拷贝的对象成员函数将保持引用关系。
+ * @example
+ * Object.clone({a: 3, b: [5]}) // {a: 3, b: [5]}
+ */
+Object.clone = function (obj) {
+    if (obj && typeof obj === 'object') {
+        if (obj instanceof Array) {
+            var newObj = [];
+            for (var i = 0; i < obj.length; i++) {
+                newObj[i] = Object.clone(obj[i]);
+            }
+            obj = newObj;
+        } else if (obj instanceof Date) {
+            obj = new Date(+obj);
+        } else if (obj instanceof RegExp) {
+            obj = new RegExp(obj);
+        } else {
+            var newObj = {};
+            for (var i in obj) {
+                newObj[i] = Object.clone(obj[i]);
+            }
+            obj = newObj;
+        }
+    }
+    return obj;
+};
+
+// #endregion
+
 // #region @String.format
 
 /**
@@ -18824,7 +18861,7 @@ Builder.prototype = {
      */
     log: function (message) {
         if (this.logLevel < Builder.LOG_LEVEL.log) return;
-        message = this.messages[message] || message;
+        message = this.messages[message] || String(message);
         message = String.format.apply(String, arguments);
         return this.write(message, Builder.LOG_LEVEL.log);
     },
@@ -18836,7 +18873,7 @@ Builder.prototype = {
      */
     info: function (message) {
         if (this.logLevel < Builder.LOG_LEVEL.info) return;
-        message = this.messages[message] || message;
+        message = this.messages[message] || String(message);
         message = String.format.apply(String, arguments);
         return this.write(message, Builder.LOG_LEVEL.info);
     },
@@ -18847,7 +18884,7 @@ Builder.prototype = {
      * @param {Object} ... 格式化参数。 
      */
     warn: function (message) {
-        message = this.messages[message] || message;
+        message = this.messages[message] || String(message);
         message = String.format.apply(String, arguments);
         this.warnings.push(message);
         return this.logLevel >= Builder.LOG_LEVEL.warn && this.write(message, Builder.LOG_LEVEL.warn);
@@ -18859,7 +18896,7 @@ Builder.prototype = {
      * @param {Object} ... 格式化参数。 
      */
     error: function (message) {
-        message = this.messages[message] || message;
+        message = this.messages[message] || String(message);
         message = String.format.apply(String, arguments);
         this.errors.push(message);
         return this.logLevel >= Builder.LOG_LEVEL.error && this.write(message, Builder.LOG_LEVEL.error);
@@ -18872,7 +18909,7 @@ Builder.prototype = {
      */
     success: function (message) {
         if (this.logLevel < Builder.LOG_LEVEL.success) return;
-        message = this.messages[message] || message;
+        message = this.messages[message] || String(message);
         message = String.format.apply(String, arguments);
         return this.write(message, Builder.LOG_LEVEL.success);
     },
@@ -18884,7 +18921,7 @@ Builder.prototype = {
      */
     debug: function (message) {
         if (!this.verbose) return;
-        message = this.messages[message] || message;
+        message = this.messages[message] || String(message);
         message = String.format.apply(String, arguments);
         return this.write(message, Builder.LOG_LEVEL.log);
     },
@@ -18962,9 +18999,7 @@ Builder.prototype = {
 
             // 生成配置。
             var options = rule.processorOptions[i];
-            if (options == null || typeof options === "object") {
-                options = { __proto__: options };
-            }
+           	options = options == null ? {} : Object.clone(options);
 
             // 执行处理器。
             var result;
@@ -19775,7 +19810,7 @@ BuildFile.prototype = {
         }
 
         // 报告错误。
-        this.builder.error("{0}: {1}", path, message);
+        this.builder.error("{0}: {1}: {2}", path, title, message);
 
         // 文本文件追加错误信息。
         if (typeof this._data === "string") {
@@ -19997,9 +20032,9 @@ BuildFile.prototype = {
 
             if (/md5/i.test(tagName)) {
                 var md5 = file.getMd5();
-                tagName = tagName.replace(/md5_(\d+)/g, function (all, num) {
+                tagName = tagName.replace(/md5\D(\d+)/g, function (all, num) {
                     return md5.substr(0, +num);
-                }).replace(/md5/g, md5).replace(/MD5_(\d+)/g, function (all, num) {
+                }).replace(/md5/g, md5).replace(/MD5\D(\d+)/g, function (all, num) {
                     return md5.substr(0, +num).toUpperCase();
                 }).replace(/MD5/g, function () {
                     return md5.toUpperCase();
@@ -20288,7 +20323,7 @@ function createNameFilter(filter) {
             }
 
             if (/\/$/.test(filter)) {
-                filter = filter.substr(filter.length - 1);
+                filter = filter.substr(0, filter.length - 1);
                 postfix = '\\/';
             } else {
                 postfix = '(\\/|$)'
@@ -20562,25 +20597,79 @@ exports.loadIgnoreFile = function (path) {
 };
 
 /**
+ * 打印一条普通日志。
+ * @param {String} message 要输出的信息。 
+ * @param {Object} ... 格式化参数。 
+ */
+exports.log = function () { return this.builder.log.apply(this.builder, arguments); };
+
+/**
+ * 打印一条信息日志。
+ * @param {String} message 要输出的信息。 
+ * @param {Object} ... 格式化参数。 
+ */
+exports.info = function () { return this.builder.info.apply(this.builder, arguments); };
+	 
+/**
+ * 打印一条警告日志。
+ * @param {String} message 要输出的信息。 
+ * @param {Object} ... 格式化参数。 
+ */
+exports.warn = function () { return this.builder.warn.apply(this.builder, arguments); };
+	 
+ /**
+ * 打印一条错误日志。
+ * @param {String} message 要输出的信息。 
+ * @param {Object} ... 格式化参数。 
+ */
+exports.error = function () { return this.builder.error.apply(this.builder, arguments); };
+
+/**
+ * 打印一条成功日志。
+ * @param {String} message 要输出的信息。 
+ * @param {Object} ... 格式化参数。 
+ */
+exports.success = function () { return this.builder.success.apply(this.builder, arguments); };
+
+/**
+ * 打印一条调试信息。
+ * @param {String} message 要输出的信息。 
+ * @param {Object} ... 格式化参数。 
+ */
+exports.debug = function () { return this.builder.debug.apply(this.builder, arguments); };
+
+/**
  * 执行生成任务。
- * @param {Object} options 命令行参数集合。
+ * @param {Object|Array|String|Function|RegExp|Boolean} [options] 命令行参数集合或者要发布的文件列表或者布尔值指示是否清理文件夹。
  */
 exports.build = function (options) {
+	
+	// 无参数。
+	if (options == null){
+		return this.builder.buildAll();
+	}
 
-    // 调用原生接口。
-    if (options == null || typeof options === "boolean") {
-        return this.builder.build(options);
+    // 命令行参数
+    if (typeof options === "object" && !Array.isArray(options)) {
+		initOptions(options);
+
+		// 生成用户指定的所有文件。
+		if (options.length >= 2) {
+			return this.builder.build.apply(this.builder, getFilesFromOptions(options));
+		}
+
+		// 生成整个项目。
+		return this.builder.buildAll(options.clean);
     }
-
-    initOptions(options);
-
-    // 生成用户指定的所有文件。
-    if (options.length >= 2) {
-        return this.builder.build.apply(this.builder, getFilesFromOptions(options));
-    }
-
-    // 生成整个项目。
-    return this.builder.buildAll(options.clean);
+	
+	// 是否清理。
+	if(typeof options === "boolean") {
+		return this.builder.buildAll(options);
+	}
+	
+	// 生成指定的文件。
+	return this.builder.build(options);
+   
 };
 
 /**
@@ -20631,9 +20720,9 @@ exports.openServer = function (options) {
     if (server) {
         require("child_process").exec("start " + server.rootUrl, function (error, stdout, stderr) {
             if (error) {
-                exports.builder.error(stderr);
+                exports.error(stderr);
             } else {
-                exports.builder.log(stdout);
+                exports.log(stdout);
             }
         });
     }

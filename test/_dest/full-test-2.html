@@ -40,9 +40,16 @@
     <link rel="stylesheet" type="text/css" href="http://mat1.gtimg.com/www/css/qq2012/hot_word_sogou.css?__inline"/>
 
 	<!-- 内嵌 SASS -->
-	<style type="text/sass">.sass-inline {
-  color: yellow; }
-</style>
+	<style type="text/sass">/*
+
+	Sass Compilation Error: 
+		%1 is not a valid Win32 application.
+\\?\D:\mywork\Node\node_modules\node-sass\vendor\win32-x64-46\binding.node
+		At {2)
+
+*/
+
+ $a: yellow; .sass-inline { color: $a; } </style>
 	
 	<!-- 外部 SASS -->
     <link rel="stylesheet" type="text/css" href="tpack://styles/sass-error.css?"/>
