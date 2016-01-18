@@ -4,3 +4,6 @@ c();
 
 
 
+require('./c.js', function(c){
+	c();
+});
