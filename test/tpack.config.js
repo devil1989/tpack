@@ -4,7 +4,7 @@ tpack.destPath = "_dest";
 
 // 设置全局忽略的路径。
 tpack.loadIgnoreFile(".gitignore");
-tpack.ignore(".*", "_*", "$*", "*~", "tpack*");
+tpack.ignore(".*", "_*", "$*", "*~");
 
 function compile() {
     tpack.src("*.scss", "*.sass").pipe(require("tpack-node-sass")).dest("$1.css");

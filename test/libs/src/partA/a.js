@@ -1,12 +1,1 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports["default"] = api_a;
-
-function api_a() {
-    alert("a.js");
-}
-
-module.exports = exports["default"];
+var __tpack__=__tpack__||{modules:{__proto__:null},define:function(e,t){return __tpack__.modules[__tpack__.resolve(e)]={factory:t,exports:{}}},require:function(e,t){if("string"==typeof e){if(!t){var r=__tpack__.modules[__tpack__.resolve(e)];if(!r)throw new Error("Cannot find module '"+e+"'");return r.loaded||(r.loaded=!0,r.factory.call(r.exports,r.exports,r,__tpack__.require,e)),r.exports}e=[e]}},resolve:function(){var e=document.getElementsByTagName("script");return e=e[e.length-1].src,function(t){if(/(\/|^)\//.test(t))return t;var r=document.createElement("a");return r.href=e+"/../"+t,r.href}}()};__tpack__.define("a.es",function(e,t,r){"use strict";function _(){alert("a.js")}Object.defineProperty(e,"__esModule",{value:!0}),e["default"]=_,t.exports=e["default"]}),__tpack__.require("libs/src/partA/a.es");

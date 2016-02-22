@@ -1,3 +1,11 @@
+/*
+
+	Uglify Js Error: 
+		Unexpected token: punc (()
+		At {2)
+
+*/
+
 var __tpack__ = __tpack__ || {
 	modules: { __proto__: null },
 	define: function (moduleName, factory) {

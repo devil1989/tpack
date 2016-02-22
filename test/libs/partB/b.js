@@ -1,1 +1,1 @@
-console.log("b");
+"use strict";console.log("b");

@@ -1,6 +1,1 @@
-﻿var c = require('./c.js');
-c();
-
-
-
-
+var c=require("./c.js");c();

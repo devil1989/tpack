@@ -64,6 +64,7 @@
     <Compile Include="bin\tpack-cli.js" />
     <Compile Include="lib\i18n\zh-cn.js" />
     <Compile Include="test\libs\src\partC\test-requirejs.main.js" />
+    <Compile Include="test\tpack.config.js" />
     <Compile Include="test\_my\build.js" />
     <Compile Include="lib\index.js" />
     <Compile Include="lib\builder.js" />

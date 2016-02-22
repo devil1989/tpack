@@ -1,6 +1,1 @@
-﻿module.exports = function () {
-	alert("c.js");
-};
-
-
-
+var __tpack__=__tpack__||{modules:{__proto__:null},define:function(e,r){return __tpack__.modules[__tpack__.resolve(e)]={factory:r,exports:{}}},require:function(e,r){if("string"==typeof e){if(!r){var t=__tpack__.modules[__tpack__.resolve(e)];if(!t)throw new Error("Cannot find module '"+e+"'");return t.loaded||(t.loaded=!0,t.factory.call(t.exports,t.exports,t,__tpack__.require,e)),t.exports}e=[e]}},resolve:function(){var e=document.getElementsByTagName("script");return e=e[e.length-1].src,function(r){if(/(\/|^)\//.test(r))return r;var t=document.createElement("a");return t.href=e+"/../"+r,t.href}}()};__tpack__.define("c.js",function(e,r,t){r.exports=function(){alert("c.js")}}),__tpack__.require("libs/src/partC/c.js");

@@ -1,3 +1,11 @@
+/*
+
+	Uglify Js Error: 
+		Unexpected token: punc (()
+		At {2)
+
+*/
+
 (this, function () {
     
     /* 105 */

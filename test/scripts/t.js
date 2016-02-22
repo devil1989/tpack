@@ -1,2 +1,1 @@
-// #module commonjs
 require("tpack");

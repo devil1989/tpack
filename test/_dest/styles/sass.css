@@ -1,13 +1,1 @@
-/*
-
-	Sass Compilation Error: 
-		%1 is not a valid Win32 application.
-\\?\D:\mywork\Node\node_modules\node-sass\vendor\win32-x64-46\binding.node
-		At {2)
-
-*/
-
-.scss {
-	$d:red;
-    color: $d;
-}
+.scss{$d:red;color:$d}
