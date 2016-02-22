@@ -16249,7 +16249,9 @@ function HttpCookie(name, value, options){
 }
 
 HttpCookie.prototype = {
-    constructor: HttpCookie,
+
+    constructor: HttpCookie,
+
 	/**
 	 * 获取或设置将此 Cookie 与其关联的域。默认值为当前域。
 	 * @type {String}
@@ -16387,7 +16389,9 @@ function HttpCookieCollection(){
 }
 
 HttpCookieCollection.prototype = {
-    constructor: HttpCookieCollection,
+
+    constructor: HttpCookieCollection,
+
 	/**
 	 * 将指定的 Cookie 添加到此 Cookie 集合中。
 	 * @param {String/HttpCookie} name 创建的 Cookie 名字。
@@ -16469,19 +16473,1724 @@ module.exports = HttpCookieCollection;
 });
 
 __tpack__.define("../../aspserver/lib/httprequest.js", function(exports, module, require){
-var Http = require("http");var Path = require("path");var Url = require("url");var HttpUtility = require("../../aspserver/lib/httputility.js");var HttpCookie = require("../../aspserver/lib/httpcookie.js");var HttpCookieCollection = require("../../aspserver/lib/httpcookiecollection.js");/** * 使服务器能够读取客户端在 Web 请求期间发送的 HTTP 值。 * @class */function HttpRequest(httpWorkerRequest, context){	this._wr = httpWorkerRequest;	this.context = context;}HttpRequest.prototype = {    constructor: HttpRequest,	/**	 * 当前对象关联的 {@link HttpWorkerRequest} 对象。	 * @type HttpWorkerRequest	 * @private	 */	_wr: null,		/**	 * 获取当前对象关联的 {@link HttpContext} 对象。	 * @type HttpContext	 */	context: null,		/**	 * 获取客户端支持的 MIME 接受类型的字符串数组。	 * @returns {String[]} 客户端支持的 MIME 接受类型的字符串数组。	 * @remark 此属性将消费大量性能，应该保存属性返回值以重复使用资源。	 */	get acceptTypes(){		return parseMultivalueHeader(this.getHeader('Accept'));	},		/**	 * 获取客户端支持的字符集的字符串数组。	 * @returns {String[]} 客户端支持的字符集的字符串数组。	 * @remark 此属性将消费大量性能，应该保存属性返回值以重复使用资源。	 */	get acceptCharsets(){		return parseMultivalueHeader(this.getHeader('Accept-Charsets'));	},		// AnonymousID		/**	 * 获取服务器上虚拟应用程序根路径。(末尾不含 /)	 * @returns {String} 当前应用程序的虚拟路径。	 */	get applicationPath(){		return this._wr.getAppPath();	},		// /**	 // * 获取应用程序根的虚拟路径，并通过对应用程序根使用波形符 (~) 表示法（例如，以“~/page.aspx”的形式）使该路径成为相对路径。	 // * @returns {String} 当前请求的应用程序根的虚拟路径。	 // */	// get appRelativeCurrentExecutionFilePath(){		// return '~' + this.currentExecutionFilePath.replace(this._wr.getAppPath(), "");	// },		/**	 * 获取当前请求的客户端安全证书。	 * @returns {HttpClientCertificate} 包含有关客户端安全证书设置的信息的对象。	 */	get clientCertificate(){		return this._wr.getClientCertificate();	},		/**	 * 获取或设置实体主体的字符集。	 * @returns {String} 表示客户端的字符集的编码。	 */	get contentEncoding(){		if(this._contentEncoding)			return this._contentEncoding;			var userAgent = this.userAgent;		if(/^UP/i.test(userAgent)){			var encoding = this.getHeader("x-up-devcap-post-charset");			if(encoding)				return this._contentEncoding = encoding;		}				if(!this._wr.hasEntityBody()){			return null;		}        		var contentType = this.contentType;				if(!contentType){			return null;		}				var attributeFromHeader = HttpUtility.getAttributeFromHeader(contentType, "charset");		if (attributeFromHeader == null) {			return null;		}			return this._contentEncoding = attributeFromHeader;	},		/**	 * 获取或设置实体主体的字符集。	 * @param {String} value 表示客户端的字符集的编码。	 */	set contentEncoding(value){		this._contentEncoding = value;		this._wr.contentEncoding = value;	},		/**	 * 指定客户端发送的内容长度（以字节计）。	 * @returns {Number} 客户端发送的内容的长度（以字节为单位）。	 */	get contentLength(){		return this._wr.getTotalEntityBodyLength();	},		/**	 * 获取或设置传入请求的 MIME 内容类型。	 * @returns {String} 表示传入请求的 MIME 内容类型的字符串，例如，“text/html”。	 */	get contentType(){		return this.getHeader('Content-Type');	},		/**	 * 获取或设置传入请求的 MIME 内容类型。	 * @returns {String} 表示传入请求的 MIME 内容类型的字符串，例如，“text/html”。	 */	set contentType(value){		this.setHeader('Content-Type', value);	},		/**	 * 获取响应 Cookie 集合。	 * @returns {HttpCookieCollection} 响应 Cookie 集合。	 */	get cookies(){		return this._cookies || (this._cookies = HttpCookieCollection.parse(this.getHeader("Cookie")));	},		/**	 * 获取一个 Cookie 字段。	 */	getCookie: function(name){		var cookie = this.cookies[name];		return cookie ? cookie.toString() : undefined;	},		// /**	 // * 获取当前请求的虚拟路径。	 // * @returns {String} 当前请求的虚拟路径。	 // */	// get currentExecutionFilePath(){		// return this._wr.getFilePath();	// },		// /**	 // *获取当前请求的虚拟路径的扩展名。	 // @return {String} 当前请求的虚拟路径的扩展名。	 // */	// get currentExecutionFilePathExtension(){		// return Path.extname(this.currentExecutionFilePath);	// },		/**	 *获取当前请求的虚拟路径的扩展名。	 @return {String} 当前请求的虚拟路径的扩展名。	 */	get filePathExtension(){		return Path.extname(this._wr.getFilePath());	},		/**	 * 获取当前请求的虚拟路径。	 * @returns {String} 当前请求的虚拟路径。	 */	get filePath(){		return this._wr.getFilePath();	},	/**	 * 获取采用多部分 MIME 格式的由客户端上载的文件的集合。	 * @returns {Object} 客户端上载的文件集合。	 */	get files(){			},		// Filter		/**	 * 获取窗体变量集合。	 * @returns {Object} 表示窗体变量集合的 Object。	 */	get form(){				if(!this.hasForm)			return {};				if(this._form)			return this._form;				return this._form = HttpUtility.parseQueryString(this.content.toString(this.contentEncoding || "utf-8"));			},		/**	 * 获取一个字符串，该值指示 Files 是否存在。	 * @returns {Boolean} 表示窗体变量集合的 Object。	 */	get hasFiles(){		return this._wr.hasEntityBody() && /^multipart\/form-data/i.test(this.contentType);	},		/**	 * 获取一个字符串，该值指示 Form 是否存在。	 * @returns {Boolean} 表示窗体变量集合的 Object。	 */	get hasForm(){		return this._wr.hasEntityBody();	},		/**	 * 获取一个字符串，该值指示 Form 是否存在。	 * @returns {Boolean} 表示窗体变量集合的 Object。	 */	get hasQueryString(){		return !!this._wr.getQueryString();	},		/**	 * 获取 HTTP 头集合。	 * @returns {Object} 表示窗体变量集合的 Object。	 */	get headers(){		return this._wr.getAllRequestHeaders();	},		/**	 * 返回指定字段的 HTTP 请求标头。	 * @param {String} name 标头的名称。	 * @returns {String} HTTP 请求标头。	 */	getHeader: function(name){		return this._wr.getRequestHeader(name);	},		/**	 * 获取客户端使用的 HTTP 数据传输方法（如 GET、POST 或 HEAD）。	 * @returns {String} 客户端使用的 HTTP 数据传输方法。	 */	get httpMethod(){		return this._wr.getHttpVerbName();	},		/**	 * 获取客户端使用的 HTTP 版本(如 HTTP/1.1)。	 * @returns {String} 客户端使用的 HTTP 版本。	 */	get httpVersion(){		return this._wr.getHttpVersion();	},		/**	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。	 * @returns {Date} 该页过期时的日期和时间。	 */	get ifModifiedSince(){		return HttpUtility.getDateFromHeader(this.getHeader("If-Modified-Since"));	},		/**	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。	 * @returns {Date} 该页过期时的日期和时间。	 */	set ifModifiedSince(value){		this.setHeader("If-Modified-Since", value.toUTCString());	},		/**	 * 获取引发当前请求的原因。	 * @returns {Number} 请求的原因码。 0 - 浏览器访问, 1 - XMLHttpRequest	 */	get reason(){		return this._wr.getRequestReason();	},		// /**	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。	 // * @returns {String} 一个编码，包含与当前标头的字符集有关的信息。	 // */	// get headerEncoding(){		// return this._wr.headerEncoding;	// },		// /**	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。	 // * @returns {String} 一个编码，包含与当前标头的字符集有关的信息。	 // */	// set headerEncoding(value){		// this._wr.headerEncoding = value;	// },		// Output		/**	 * 获取传入的 HTTP 实体主体的内容。	 * @returns {Stream} 请求正文。	 */	get inputStream(){		return this._wr.inputStream;	},		// IsAuthenticated		/**	 * 获取一个值，该值指示该请求是否来自本地计算机。	 * @returns {Boolean} 如果该请求来自本地计算机，则为 true；否则，为 false。	 */	get isLocal(){		var userHostAddress = this.userHostAddress;		if (!userHostAddress) {			return false;		}		return userHostAddress == "127.0.0.1" || userHostAddress == "::1" || userHostAddress == this._wr.getLocalAddress();	},		/**	 * 获取一个值，该值指示 HTTP 连接是否使用安全套接字（即 HTTPS）。	 * @returns {Boolean} 如果连接是 SSL 连接，则为 true；否则为 false。	 */	get isSecureConnection(){		return this._wr.isSecure();	},		/**	 * 获取 QueryString Form ServerVariables 和 Cookies 项的组合集合。	 * @returns 一个 Object 对象。	 */	get params(){		var obj = {};		copy(obj, this.serverVariables);		copy(obj, this.form);		copy(obj, this.queryString);				function copy(dest, src){			for(var key in src){				dest[key] = src[key];			}		}	},		/**	 * 获取当前请求的虚拟路径。	 * @returns {Url} 当前请求的虚拟路径。	 */	get path(){		return this._wr.getFilePath();	},		/**	 * 获取具有 URL 扩展名的资源的附加路径信息。	 * @returns {String} 资源的附加路径信息。	 */	get pathInfo(){		return this._wr.getPathInfo();	},		/**	 * 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。	 * @returns {String} 当前应用程序的根目录的文件系统路径。	 */	get physicalApplicationPath(){		return this._wr.getAppPathTranslated();	},		/**	 * 获取与请求的 URL 相对应的物理文件系统路径。	 * @returns {String} 当前请求的文件系统路径。	 */	get physicalPath(){		return this._wr.getFilePathTranslated();	},	/**	 * 获取 HTTP 查询字符串变量集合。	 * @returns {Object} 包含由客户端发送的查询字符串变量的集合。	 */	get queryString(){		return this._queryString || (this._queryString = HttpUtility.parseQueryString(this.queryStringText));	},		/**	 * 获取 HTTP 查询字符串变量源字符串 。	 * @returns {String} 包含由客户端发送的查询字符串变量的集合。	 */	get queryStringText(){		return this._wr.getQueryString();	},		/**	 * 获取当前请求的原始 URL。	 * @returns {String} 当前请求的原始 URL。	 */	get rawUrl(){		return this._wr.getRawUrl();	},		/**	 * 获取 Web 服务器变量的集合。	 */	get serverVariables(){		return {};	},		/**	 * 获取当前输入流中的字节数。	 * @param {Number} 输入流中的字节数。	 */	get totalBytes(){		return this._wr.getBytesRead();	},		/**	 * 获取有关当前请求的 URL 的信息。	 * @param {Number} 包含有关当前请求的 URL 的信息的对象。	 */	get url(){		return Url.parse(this.rawUrl, true);	},		/**	 * 获取有关当前请求的 HOST 的信息。	 * @returns {String} 包含有关当前请求的 HOST 的信息。	 */	get host(){		return this.getHeader("Host") || (this.localHostAddress + (this.localHostPort !== 80 ? ":" + this.localHostPort == 80 : ""));	},		/**	 * 获取指向当前请求地址的链接地址。	 * @returns {String} 链接地址。	 */	get href(){		return (this._wr.isSecure() ? "https://" : "http://") + this.host + this.rawUrl;	},		/**	 * 获取当前请求的正文。	 * @returns {Buffer} 请求的正文。	 */	get content(){		return this._wr.getEntityBody();	},		/**	 * 获取有关客户端上次请求的 URL 的信息，该请求链接到当前的 URL。	 * @returns {String} 包含有关当前请求的 URL 的信息的对象。	 */	get urlReferrer(){		return this.getHeader('Referer');	},		/**	 * 获取客户端浏览器的原始用户代理信息。	 * @returns {String} 客户端浏览器的原始用户代理信息。	 */	get userAgent(){		return this.getHeader('User-Agent');	},		/**	 *获取本地客户端的 IP 主机地址。	 * @returns {String} 本地客户端的 IP 地址。	 */	get localHostAddress(){		return this._wr.getLocalAddress();	},		/**	 * 获取本地客户端的端口。	 * @returns {String} 本地客户端的端口。	 */	get localHostPort(){		return this._wr.getLocalPort();	},		/**	 * 获取远程客户端的显示 IP 主机地址。	 * @returns {String} 远程客户端的 IP 地址。	 * @remark 该函数会检测 HTTP 头的代理字段，并优先返回 HTTP 头中的 IP 字段。	 */	get ip(){		return this.getHeader("X-Forwarded-For") || 			this.getHeader("Via") || 			this.userHostAddress;	},		/**	 * 获取远程客户端的 IP 主机地址。	 * @returns 远程客户端的 IP 地址。	 */	get userHostAddress(){		return this._wr.getRemoteAddress();	},		/**	 * 获取远程客户端的端口。	 * @param {Number} 远程客户端的端口。	 */	get userHostPort(){		return this._wr.getRemotePort();	},		/**	 * 获取远程客户端的 DNS 名称。	 * @param {Number} 远程客户端的 DNS 名称。	 */	get userHostName(){		return this._wr.getRemoteName();	},		/**	 * 获取客户端语言首选项的排序字符串数组。	 * @param String[]} 经过排序的客户端语言首选项的字符串数组，或者，如果为空，则为 null。	 * @remark 此属性将消费大量性能，应该保存属性返回值以重复使用资源。	 */	get userLanguages(){		return parseMultivalueHeader(this.getHeader('Accept-Language'));	},		/**	 * 将传入图像字段窗体参数映射为适当的 x 坐标值和 y 坐标值。	 * @param {String} imageFieldName 窗体图像映射的名称。	 * @returns {[Number, Number]} 二维整数数组。	 */	mapImageCoordinates: function(imageFieldName){		var obj;		switch (this.httpMethod) {                case "GET":                case "HEAD":                    obj = this.queryString;                    break;                case "POST":                    obj = this.form;                    break;                default:                    return null;            }		return [+obj[imageFieldName + ".x"], +obj[imageFieldName + ".y"]];	},		/**	 * 将指定的虚拟路径映射到物理路径。	 * @param {String} virtualPath 当前请求的虚拟路径（绝对路径或相对路径）。	 * @param {String} baseVirtualDir 用于相对解析的虚拟基目录路径。	 * @param {Boolean}  allowCrossAppMapping允许属于另一个应用程序。	 * @returns 服务器物理路径。	 */	mapPath: function(virtualPath, baseVirtualDir, allowCrossAppMapping){		if(baseVirtualDir) {			virtualPath = virtualPath.replace(baseVirtualDir, "");		}				virtualPath = this._wr.mapPath(virtualPath);				if(allowCrossAppMapping === false && this._wr.getAppPathTranslated().indexOf(virtualPath) !== 0) {			throw new Error('Cross app mapping');		}				return virtualPath;	},		/**	 * 将 HTTP 请求保存到磁盘。	 * @param {String} filename 物理驱动器路径。	 * @param {Boolean} includeHeaders 一个布尔值，该值指定是否应将 HTTP 头保存到磁盘。	 */	saveAs: function(filename, includeHeaders){				var FS = require("fs");			var s = FS.createWriteStream(filename, {			flags: 'w',			encoding: null,			mode: 0666		});				if(includeHeaders !== false){			var header = this.httpVersion + ' ' + this.httpMethod + ' ' + this.rawUrl + '\r\n';			var headers = this.headers;			for(var key in headers){				header += key + ': ' + headers[key] + '\r\n';			}						header += '\r\n';			s.write(header);		}				if(this._wr.hasEntityBody()){			s.write(this._wr.getEntityBody());		}				s.end();	},		/**	 * 对集合进行验证。	 */	validateInput: function(){			validate(this.cookies);		validate(this.form);		validate(this.queryString);				function validate(collection){			for(var key in collection){				if(check(collection[key]) === false) {					throw new Error('ValidateInput Error: `' + collection[key] + '` is not allowed');				}			}		}				function check(value){			return /<\w+>/.test(value);		}	}	};function parseMultivalueHeader(s) {	if (!s) {		return null;	}	var list = [];	var startIndex = 0;	var num = s.length;	while (startIndex < num) {		var index = s.indexOf(',', startIndex);		if (index < 0) {			index = num;		}		list.push(s.substr(startIndex, index - startIndex));		startIndex = index + 1;		if ((startIndex < num) && (s.charAt(startIndex) == ' ')) {			startIndex++;		}	}	return list;}module.exports = HttpRequest;
+
+
+var Http = require("http");
+var Path = require("path");
+var Url = require("url");
+var HttpUtility = require("../../aspserver/lib/httputility.js");
+var HttpCookie = require("../../aspserver/lib/httpcookie.js");
+var HttpCookieCollection = require("../../aspserver/lib/httpcookiecollection.js");
+
+/**
+ * 使服务器能够读取客户端在 Web 请求期间发送的 HTTP 值。
+ * @class
+ */
+function HttpRequest(httpWorkerRequest, context){
+	this._wr = httpWorkerRequest;
+	this.context = context;
+}
+
+HttpRequest.prototype = {
+
+    constructor: HttpRequest,
+
+	/**
+	 * 当前对象关联的 {@link HttpWorkerRequest} 对象。
+	 * @type HttpWorkerRequest
+	 * @private
+	 */
+	_wr: null,
+	
+	/**
+	 * 获取当前对象关联的 {@link HttpContext} 对象。
+	 * @type HttpContext
+	 */
+	context: null,
+	
+	/**
+	 * 获取客户端支持的 MIME 接受类型的字符串数组。
+	 * @returns {String[]} 客户端支持的 MIME 接受类型的字符串数组。
+	 * @remark 此属性将消费大量性能，应该保存属性返回值以重复使用资源。
+	 */
+	get acceptTypes(){
+		return parseMultivalueHeader(this.getHeader('Accept'));
+	},
+	
+	/**
+	 * 获取客户端支持的字符集的字符串数组。
+	 * @returns {String[]} 客户端支持的字符集的字符串数组。
+	 * @remark 此属性将消费大量性能，应该保存属性返回值以重复使用资源。
+	 */
+	get acceptCharsets(){
+		return parseMultivalueHeader(this.getHeader('Accept-Charsets'));
+	},
+	
+	// AnonymousID
+	
+	/**
+	 * 获取服务器上虚拟应用程序根路径。(末尾不含 /)
+	 * @returns {String} 当前应用程序的虚拟路径。
+	 */
+	get applicationPath(){
+		return this._wr.getAppPath();
+	},
+	
+	// /**
+	 // * 获取应用程序根的虚拟路径，并通过对应用程序根使用波形符 (~) 表示法（例如，以“~/page.aspx”的形式）使该路径成为相对路径。
+	 // * @returns {String} 当前请求的应用程序根的虚拟路径。
+	 // */
+	// get appRelativeCurrentExecutionFilePath(){
+		// return '~' + this.currentExecutionFilePath.replace(this._wr.getAppPath(), "");
+	// },
+	
+	/**
+	 * 获取当前请求的客户端安全证书。
+	 * @returns {HttpClientCertificate} 包含有关客户端安全证书设置的信息的对象。
+	 */
+	get clientCertificate(){
+		return this._wr.getClientCertificate();
+	},
+	
+	/**
+	 * 获取或设置实体主体的字符集。
+	 * @returns {String} 表示客户端的字符集的编码。
+	 */
+	get contentEncoding(){
+		if(this._contentEncoding)
+			return this._contentEncoding;
+	
+		var userAgent = this.userAgent;
+		if(/^UP/i.test(userAgent)){
+			var encoding = this.getHeader("x-up-devcap-post-charset");
+			if(encoding)
+				return this._contentEncoding = encoding;
+		}
+		
+		if(!this._wr.hasEntityBody()){
+			return null;
+		}
+        
+		var contentType = this.contentType;
+		
+		if(!contentType){
+			return null;
+		}
+		
+		var attributeFromHeader = HttpUtility.getAttributeFromHeader(contentType, "charset");
+		if (attributeFromHeader == null) {
+			return null;
+		}
+	
+		return this._contentEncoding = attributeFromHeader;
+	},
+	
+	/**
+	 * 获取或设置实体主体的字符集。
+	 * @param {String} value 表示客户端的字符集的编码。
+	 */
+	set contentEncoding(value){
+		this._contentEncoding = value;
+		this._wr.contentEncoding = value;
+	},
+	
+	/**
+	 * 指定客户端发送的内容长度（以字节计）。
+	 * @returns {Number} 客户端发送的内容的长度（以字节为单位）。
+	 */
+	get contentLength(){
+		return this._wr.getTotalEntityBodyLength();
+	},
+	
+	/**
+	 * 获取或设置传入请求的 MIME 内容类型。
+	 * @returns {String} 表示传入请求的 MIME 内容类型的字符串，例如，“text/html”。
+	 */
+	get contentType(){
+		return this.getHeader('Content-Type');
+	},
+	
+	/**
+	 * 获取或设置传入请求的 MIME 内容类型。
+	 * @returns {String} 表示传入请求的 MIME 内容类型的字符串，例如，“text/html”。
+	 */
+	set contentType(value){
+		this.setHeader('Content-Type', value);
+	},
+	
+	/**
+	 * 获取响应 Cookie 集合。
+	 * @returns {HttpCookieCollection} 响应 Cookie 集合。
+	 */
+	get cookies(){
+		return this._cookies || (this._cookies = HttpCookieCollection.parse(this.getHeader("Cookie")));
+	},
+	
+	/**
+	 * 获取一个 Cookie 字段。
+	 */
+	getCookie: function(name){
+		var cookie = this.cookies[name];
+		return cookie ? cookie.toString() : undefined;
+	},
+	
+	// /**
+	 // * 获取当前请求的虚拟路径。
+	 // * @returns {String} 当前请求的虚拟路径。
+	 // */
+	// get currentExecutionFilePath(){
+		// return this._wr.getFilePath();
+	// },
+	
+	// /**
+	 // *获取当前请求的虚拟路径的扩展名。
+	 // @return {String} 当前请求的虚拟路径的扩展名。
+	 // */
+	// get currentExecutionFilePathExtension(){
+		// return Path.extname(this.currentExecutionFilePath);
+	// },
+	
+	/**
+	 *获取当前请求的虚拟路径的扩展名。
+	 @return {String} 当前请求的虚拟路径的扩展名。
+	 */
+	get filePathExtension(){
+		return Path.extname(this._wr.getFilePath());
+	},
+	
+	/**
+	 * 获取当前请求的虚拟路径。
+	 * @returns {String} 当前请求的虚拟路径。
+	 */
+	get filePath(){
+		return this._wr.getFilePath();
+	},
+
+	/**
+	 * 获取采用多部分 MIME 格式的由客户端上载的文件的集合。
+	 * @returns {Object} 客户端上载的文件集合。
+	 */
+	get files(){
+		
+	},
+	
+	// Filter
+	
+	/**
+	 * 获取窗体变量集合。
+	 * @returns {Object} 表示窗体变量集合的 Object。
+	 */
+	get form(){
+		
+		if(!this.hasForm)
+			return {};
+		
+		if(this._form)
+			return this._form;
+		
+		return this._form = HttpUtility.parseQueryString(this.content.toString(this.contentEncoding || "utf-8"));
+		
+	},
+	
+	/**
+	 * 获取一个字符串，该值指示 Files 是否存在。
+	 * @returns {Boolean} 表示窗体变量集合的 Object。
+	 */
+	get hasFiles(){
+		return this._wr.hasEntityBody() && /^multipart\/form-data/i.test(this.contentType);
+	},
+	
+	/**
+	 * 获取一个字符串，该值指示 Form 是否存在。
+	 * @returns {Boolean} 表示窗体变量集合的 Object。
+	 */
+	get hasForm(){
+		return this._wr.hasEntityBody();
+	},
+	
+	/**
+	 * 获取一个字符串，该值指示 Form 是否存在。
+	 * @returns {Boolean} 表示窗体变量集合的 Object。
+	 */
+	get hasQueryString(){
+		return !!this._wr.getQueryString();
+	},
+	
+	/**
+	 * 获取 HTTP 头集合。
+	 * @returns {Object} 表示窗体变量集合的 Object。
+	 */
+	get headers(){
+		return this._wr.getAllRequestHeaders();
+	},
+	
+	/**
+	 * 返回指定字段的 HTTP 请求标头。
+	 * @param {String} name 标头的名称。
+	 * @returns {String} HTTP 请求标头。
+	 */
+	getHeader: function(name){
+		return this._wr.getRequestHeader(name);
+	},
+	
+	/**
+	 * 获取客户端使用的 HTTP 数据传输方法（如 GET、POST 或 HEAD）。
+	 * @returns {String} 客户端使用的 HTTP 数据传输方法。
+	 */
+	get httpMethod(){
+		return this._wr.getHttpVerbName();
+	},
+	
+	/**
+	 * 获取客户端使用的 HTTP 版本(如 HTTP/1.1)。
+	 * @returns {String} 客户端使用的 HTTP 版本。
+	 */
+	get httpVersion(){
+		return this._wr.getHttpVersion();
+	},
+	
+	/**
+	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。
+	 * @returns {Date} 该页过期时的日期和时间。
+	 */
+	get ifModifiedSince(){
+		return HttpUtility.getDateFromHeader(this.getHeader("If-Modified-Since"));
+	},
+	
+	/**
+	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。
+	 * @returns {Date} 该页过期时的日期和时间。
+	 */
+	set ifModifiedSince(value){
+		this.setHeader("If-Modified-Since", value.toUTCString());
+	},
+	
+	/**
+	 * 获取引发当前请求的原因。
+	 * @returns {Number} 请求的原因码。 0 - 浏览器访问, 1 - XMLHttpRequest
+	 */
+	get reason(){
+		return this._wr.getRequestReason();
+	},
+	
+	// /**
+	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。
+	 // * @returns {String} 一个编码，包含与当前标头的字符集有关的信息。
+	 // */
+	// get headerEncoding(){
+		// return this._wr.headerEncoding;
+	// },
+	
+	// /**
+	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。
+	 // * @returns {String} 一个编码，包含与当前标头的字符集有关的信息。
+	 // */
+	// set headerEncoding(value){
+		// this._wr.headerEncoding = value;
+	// },
+	
+	// Output
+	
+	/**
+	 * 获取传入的 HTTP 实体主体的内容。
+	 * @returns {Stream} 请求正文。
+	 */
+	get inputStream(){
+		return this._wr.inputStream;
+	},
+	
+	// IsAuthenticated
+	
+	/**
+	 * 获取一个值，该值指示该请求是否来自本地计算机。
+	 * @returns {Boolean} 如果该请求来自本地计算机，则为 true；否则，为 false。
+	 */
+	get isLocal(){
+		var userHostAddress = this.userHostAddress;
+		if (!userHostAddress) {
+			return false;
+		}
+		return userHostAddress == "127.0.0.1" || userHostAddress == "::1" || userHostAddress == this._wr.getLocalAddress();
+	},
+	
+	/**
+	 * 获取一个值，该值指示 HTTP 连接是否使用安全套接字（即 HTTPS）。
+	 * @returns {Boolean} 如果连接是 SSL 连接，则为 true；否则为 false。
+	 */
+	get isSecureConnection(){
+		return this._wr.isSecure();
+	},
+	
+	/**
+	 * 获取 QueryString Form ServerVariables 和 Cookies 项的组合集合。
+	 * @returns 一个 Object 对象。
+	 */
+	get params(){
+		var obj = {};
+		copy(obj, this.serverVariables);
+		copy(obj, this.form);
+		copy(obj, this.queryString);
+		
+		function copy(dest, src){
+			for(var key in src){
+				dest[key] = src[key];
+			}
+		}
+	},
+	
+	/**
+	 * 获取当前请求的虚拟路径。
+	 * @returns {Url} 当前请求的虚拟路径。
+	 */
+	get path(){
+		return this._wr.getFilePath();
+	},
+	
+	/**
+	 * 获取具有 URL 扩展名的资源的附加路径信息。
+	 * @returns {String} 资源的附加路径信息。
+	 */
+	get pathInfo(){
+		return this._wr.getPathInfo();
+	},
+	
+	/**
+	 * 获取当前正在执行的服务器应用程序的根目录的物理文件系统路径。
+	 * @returns {String} 当前应用程序的根目录的文件系统路径。
+	 */
+	get physicalApplicationPath(){
+		return this._wr.getAppPathTranslated();
+	},
+	
+	/**
+	 * 获取与请求的 URL 相对应的物理文件系统路径。
+	 * @returns {String} 当前请求的文件系统路径。
+	 */
+	get physicalPath(){
+		return this._wr.getFilePathTranslated();
+	},
+
+	/**
+	 * 获取 HTTP 查询字符串变量集合。
+	 * @returns {Object} 包含由客户端发送的查询字符串变量的集合。
+	 */
+	get queryString(){
+		return this._queryString || (this._queryString = HttpUtility.parseQueryString(this.queryStringText));
+	},
+	
+	/**
+	 * 获取 HTTP 查询字符串变量源字符串 。
+	 * @returns {String} 包含由客户端发送的查询字符串变量的集合。
+	 */
+	get queryStringText(){
+		return this._wr.getQueryString();
+	},
+	
+	/**
+	 * 获取当前请求的原始 URL。
+	 * @returns {String} 当前请求的原始 URL。
+	 */
+	get rawUrl(){
+		return this._wr.getRawUrl();
+	},
+	
+	/**
+	 * 获取 Web 服务器变量的集合。
+	 */
+	get serverVariables(){
+		return {};
+	},
+	
+	/**
+	 * 获取当前输入流中的字节数。
+	 * @param {Number} 输入流中的字节数。
+	 */
+	get totalBytes(){
+		return this._wr.getBytesRead();
+	},
+	
+	/**
+	 * 获取有关当前请求的 URL 的信息。
+	 * @param {Number} 包含有关当前请求的 URL 的信息的对象。
+	 */
+	get url(){
+		return Url.parse(this.rawUrl, true);
+	},
+	
+	/**
+	 * 获取有关当前请求的 HOST 的信息。
+	 * @returns {String} 包含有关当前请求的 HOST 的信息。
+	 */
+	get host(){
+		return this.getHeader("Host") || (this.localHostAddress + (this.localHostPort !== 80 ? ":" + this.localHostPort == 80 : ""));
+	},
+	
+	/**
+	 * 获取指向当前请求地址的链接地址。
+	 * @returns {String} 链接地址。
+	 */
+	get href(){
+		return (this._wr.isSecure() ? "https://" : "http://") + this.host + this.rawUrl;
+	},
+	
+	/**
+	 * 获取当前请求的正文。
+	 * @returns {Buffer} 请求的正文。
+	 */
+	get content(){
+		return this._wr.getEntityBody();
+	},
+	
+	/**
+	 * 获取有关客户端上次请求的 URL 的信息，该请求链接到当前的 URL。
+	 * @returns {String} 包含有关当前请求的 URL 的信息的对象。
+	 */
+	get urlReferrer(){
+		return this.getHeader('Referer');
+	},
+	
+	/**
+	 * 获取客户端浏览器的原始用户代理信息。
+	 * @returns {String} 客户端浏览器的原始用户代理信息。
+	 */
+	get userAgent(){
+		return this.getHeader('User-Agent');
+	},
+	
+	/**
+	 *获取本地客户端的 IP 主机地址。
+	 * @returns {String} 本地客户端的 IP 地址。
+	 */
+	get localHostAddress(){
+		return this._wr.getLocalAddress();
+	},
+	
+	/**
+	 * 获取本地客户端的端口。
+	 * @returns {String} 本地客户端的端口。
+	 */
+	get localHostPort(){
+		return this._wr.getLocalPort();
+	},
+	
+	/**
+	 * 获取远程客户端的显示 IP 主机地址。
+	 * @returns {String} 远程客户端的 IP 地址。
+	 * @remark 该函数会检测 HTTP 头的代理字段，并优先返回 HTTP 头中的 IP 字段。
+	 */
+	get ip(){
+		return this.getHeader("X-Forwarded-For") || 
+			this.getHeader("Via") || 
+			this.userHostAddress;
+	},
+	
+	/**
+	 * 获取远程客户端的 IP 主机地址。
+	 * @returns 远程客户端的 IP 地址。
+	 */
+	get userHostAddress(){
+		return this._wr.getRemoteAddress();
+	},
+	
+	/**
+	 * 获取远程客户端的端口。
+	 * @param {Number} 远程客户端的端口。
+	 */
+	get userHostPort(){
+		return this._wr.getRemotePort();
+	},
+	
+	/**
+	 * 获取远程客户端的 DNS 名称。
+	 * @param {Number} 远程客户端的 DNS 名称。
+	 */
+	get userHostName(){
+		return this._wr.getRemoteName();
+	},
+	
+	/**
+	 * 获取客户端语言首选项的排序字符串数组。
+	 * @param String[]} 经过排序的客户端语言首选项的字符串数组，或者，如果为空，则为 null。
+	 * @remark 此属性将消费大量性能，应该保存属性返回值以重复使用资源。
+	 */
+	get userLanguages(){
+		return parseMultivalueHeader(this.getHeader('Accept-Language'));
+	},
+	
+	/**
+	 * 将传入图像字段窗体参数映射为适当的 x 坐标值和 y 坐标值。
+	 * @param {String} imageFieldName 窗体图像映射的名称。
+	 * @returns {[Number, Number]} 二维整数数组。
+	 */
+	mapImageCoordinates: function(imageFieldName){
+		var obj;
+		switch (this.httpMethod) {
+                case "GET":
+                case "HEAD":
+                    obj = this.queryString;
+                    break;
+
+                case "POST":
+                    obj = this.form;
+                    break;
+
+                default:
+                    return null;
+            }
+		return [+obj[imageFieldName + ".x"], +obj[imageFieldName + ".y"]];
+	},
+	
+	/**
+	 * 将指定的虚拟路径映射到物理路径。
+	 * @param {String} virtualPath 当前请求的虚拟路径（绝对路径或相对路径）。
+	 * @param {String} baseVirtualDir 用于相对解析的虚拟基目录路径。
+	 * @param {Boolean}  allowCrossAppMapping允许属于另一个应用程序。
+	 * @returns 服务器物理路径。
+	 */
+	mapPath: function(virtualPath, baseVirtualDir, allowCrossAppMapping){
+		if(baseVirtualDir) {
+			virtualPath = virtualPath.replace(baseVirtualDir, "");
+		}
+		
+		virtualPath = this._wr.mapPath(virtualPath);
+		
+		if(allowCrossAppMapping === false && this._wr.getAppPathTranslated().indexOf(virtualPath) !== 0) {
+			throw new Error('Cross app mapping');
+		}
+		
+		return virtualPath;
+	},
+	
+	/**
+	 * 将 HTTP 请求保存到磁盘。
+	 * @param {String} filename 物理驱动器路径。
+	 * @param {Boolean} includeHeaders 一个布尔值，该值指定是否应将 HTTP 头保存到磁盘。
+	 */
+	saveAs: function(filename, includeHeaders){
+		
+		var FS = require("fs");
+	
+		var s = FS.createWriteStream(filename, {
+			flags: 'w',
+			encoding: null,
+			mode: 0666
+		});
+		
+		if(includeHeaders !== false){
+			var header = this.httpVersion + ' ' + this.httpMethod + ' ' + this.rawUrl + '\r\n';
+			var headers = this.headers;
+			for(var key in headers){
+				header += key + ': ' + headers[key] + '\r\n';
+			}
+			
+			header += '\r\n';
+			s.write(header);
+		}
+		
+		if(this._wr.hasEntityBody()){
+			s.write(this._wr.getEntityBody());
+		}
+		
+		s.end();
+	},
+	
+	/**
+	 * 对集合进行验证。
+	 */
+	validateInput: function(){
+	
+		validate(this.cookies);
+		validate(this.form);
+		validate(this.queryString);
+		
+		function validate(collection){
+			for(var key in collection){
+				if(check(collection[key]) === false) {
+					throw new Error('ValidateInput Error: `' + collection[key] + '` is not allowed');
+				}
+			}
+		}
+		
+		function check(value){
+			return /<\w+>/.test(value);
+		}
+	}
+	
+};
+
+function parseMultivalueHeader(s) {
+	if (!s) {
+		return null;
+	}
+	var list = [];
+	var startIndex = 0;
+	var num = s.length;
+	while (startIndex < num) {
+		var index = s.indexOf(',', startIndex);
+		if (index < 0) {
+			index = num;
+		}
+		list.push(s.substr(startIndex, index - startIndex));
+		startIndex = index + 1;
+		if ((startIndex < num) && (s.charAt(startIndex) == ' ')) {
+			startIndex++;
+		}
+	}
+	return list;
+}
+
+
+module.exports = HttpRequest;
 });
 
 __tpack__.define("../../aspserver/lib/httpworkerrequest.js", function(exports, module, require){
-var Http = require("http");/** * 此抽象类定义由服务器用于处理请求的基本辅助方法和枚举。
- * @abstract * @class * @remark  * 此类是和底层 API 直接进行交互的内部类。 * 修改或继承此类，可以方便地将服务器模型移植到其它坏境中。 */function HttpWorkerRequset() {}function emptyFn() {}HttpWorkerRequset.prototype = {    constructor: HttpWorkerRequset,    /**	 * 终止与客户端的连接。
-     * @abstract	 */    closeConnection: emptyFn,    /**	 * 由运行库使用以通知 @HttpWorkerRequest 当前请求的请求处理已完成。
-     * @abstract	 */    endOfRequest: emptyFn,    /**	 * 将所有挂起的响应数据发送到客户端。	 * @param {Boolean} finalFlush 如果这将是最后一次刷新响应数据，则为 true；否则为 false。
-     * @abstract	 */    flushResponse: emptyFn,    /**	 * 返回当前正在执行的服务器应用程序的虚拟路径。	 * @returns {String} 当前应用程序的虚拟路径。	 */    getAppPath: function() {        return "/";    },    /**	 * 返回当前正在执行的服务器应用程序的物理路径。	 * @returns {String} 当前应用程序的物理路径。	 */    getAppPathTranslated: function() {        return "/";    },    /**	 * 在派生类中被重写时，返回当前 URL 的应用程序池 ID。	 * @returns {String} 返回应用程序池 ID。	 */    getAppPoolID: function() {        return null;    },    /**	 * 获取从客户端读入的字节数。	 * @returns {Number} 客户端读入的字节数。	 */    getBytesRead: emptyFn,    /**	 * 在派生类中被重写时，从客户端发出的请求获取证书字段（以 X.509 标准指定）。	 * @returns {Buffer} 包含整个证书内容流的字节数组。	 */    getClientCertificate: emptyFn,    /**	 * 获取证书颁发者（以二进制格式表示）。	 * @returns {Buffer} 包含以二进制格式表示的证书颁发者的字节数组。	 */    getClientCertificateBinaryIssuer: emptyFn,    /**	 * 在派生类中被重写时，返回用于编码客户端证书的编码。	 * @returns {Number} 表示为整数的证书编码。	 */    getClientCertificateEncoding: emptyFn,    /**	 * 在派生类中被重写时，获取与客户端证书关联的 PublicKey 对象。	 * @returns {Buffer} 包含整个证书内容流的字节数组。	 */    getClientCertificatePublicKey: emptyFn,    /**	 * 在派生类中被重写时，则获取证书开始生效的日期。此日期随区域设置的不同而不同。	 * @returns {Date} 表示证书生效时间的 Date 对象。	 */    getClientCertificateValidFrom: emptyFn,    /**	 * 获取证书到期日期。	 * @returns {Date} 表示证书失效日期的 Date 对象。	 */    getClientCertificateValidUntil: emptyFn,    /**	 * 在派生类中被重写时，返回当前连接的 ID。	 * @returns {Number} 返回当前连接的 ID。	 */    getConnectionID: emptyFn,    /**	 * 在派生类中被重写时，返回所请求的 URI 的虚拟路径。	 * @returns {String} 请求的 URI 的路径。	 */    getFilePath: emptyFn,    /**	 * 返回请求的 URI 的物理文件路径（并将其从虚拟路径转换成物理路径：例如，从"/proj1/page.aspx"转换成"c:\dir\page.aspx"）。	 * @returns {String} 请求的 URI 的已转换的物理文件路径。	 */    getFilePathTranslated: emptyFn,    /**	 * 返回请求标头的指定成员。	 * @returns {String} 请求标头中返回的 HTTP 谓词。	 */    getHttpVerbName: emptyFn,    /**	 * 提供对请求的 HTTP 版本（如"HTTP/1.1"）的访问。	 * @returns {String} 请求标头中返回的 HTTP 版本。	 */    getHttpVersion: emptyFn,    /**	 * 返回与指定的索引相对应的标准 HTTP 请求标头。	 * @returns {String} 标头的索引。	 */    getHeader: emptyFn,    /**	 * 请求标头中返回的服务器 IP 地址。	 * @returns {String} 请求标头中返回的服务器 IP 地址。	 */    getLocalAddress: emptyFn,    /**	 * 请求标头中返回的服务器端口号。	 * @returns {String} 请求标头中返回的服务器端口号。	 */    getLocalPort: emptyFn,    /**	 * 在派生类中被重写时，返回 HTTP 协议（HTTP 或 HTTPS）。	 * @returns {String} 如果使用了 SSL ，是HTTPS；否则，为 HTTP。	 */    getProtocol: emptyFn,    /**	 * 返回请求 URL 中指定的查询字符串。	 * @returns {String} 请求查询字符串。	 */    getQueryString: emptyFn,    /**	 * 返回附加了查询字符串的请求标头中包含的 URL 路径。	 * @returns {String} 请求标头的原始 URL 路径。	 */    getRawUrl: emptyFn,    /**	 * 提供对请求标头的指定成员的访问。	 * @returns {String} 客户端的 IP 地址。	 */    getRemoteAddress: emptyFn,    /**	 * 在派生类中被重写时，返回客户端计算机的名称。	 * @returns {String} 客户端计算机的名称。	 */    getRemoteName: emptyFn,    /**	 * 提供对请求标头的指定成员的访问。	 * @returns {Number} 客户端的 HTTP 端口号。	 */    getRemotePort: emptyFn,    /**	 * 在派生类中被重写时，返回请求的原因。	 * @returns {Number} 原因代码。	 */    getRequestReason: emptyFn,    /**	 * 在派生类中被重写时，返回本地服务器的名称。	 * @returns {Number} 本地服务器的名称。	 */    getServerName: emptyFn,    /**	 * 从与请求关联的服务器变量词典返回单个服务器变量。	 * @param {String} name 请求的服务器变量的名称。	 * @returns {Number} 请求的服务器变量。	 */    getServerVariable: emptyFn,    /**	 * 返回请求的 URI 的虚拟路径。	 * @returns {String} 请求的 URI 的路径。	 */    getUriPath: emptyFn,    /**	 * 返回一个值，该值指示是否已为当前的请求将 HTTP 响应标头发送到客户端。	 * @returns {Boolean} 如果 HTTP 响应标头已发送到客户端，则为 true；否则，为 false。	 */    headersSent: emptyFn,    /**	 * 返回一个值，该值指示客户端连接是否仍处于活动状态。	 * @returns {Boolean} 如果客户端连接仍处于活动状态，则为 true；否则，为 false。	 */    isClientConnected: emptyFn,    /**	 * 返回一个指示连接是否使用 SSL 的值。	 * @returns {Boolean} 如果连接是 SSL 连接，则为 true；否则为 false。默认值为 false。	 */    isSecure: emptyFn,    /**	 * 返回与指定虚拟路径相对应的物理路径。	 * @param {String} virtualPath 虚拟路径。	 * @returns {String} 参数中指定的虚拟路径相对应的物理路径。	 */    mapPath: emptyFn,    /**	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。	 * @param {Number} contentLength 响应的长度（以字节为单位）。	 */    sendCalculatedContentLength: emptyFn,    /**	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。	 * @param {String} filename 要写入 HTTP 输出的文件名。	 * @param {Number} [offset=0] 文件中的位置，将从该位置开始将内容写入到 HTTP 输出中。	 * @param {Number} [length=buffer.length] 要传输的字节数。	 */    sendResponseFromFile: emptyFn,    /**	 * 将字节数组中指定数目的字节添加到响应。	 * @param {String} data 要发送的字节数组。	 * @param {Number} [length=data.length] 要发送的字节数（从第一个字节开始）。	 */    sendResponseFromMemory: emptyFn,    /**	 * 指定响应的 HTTP 状态代码和状态说明，例如 SendStatus(200, "Ok")。	 * @param {Number} statusCode 要发送的状态代码。	 * @param {String} statusDescription 要发送的状态说明。	 */    sendStatus: emptyFn,    /**	 * 将指定的 @HttpCookieCollection 输出到 HTTP 响应。	 * @param {HttpCookieCollection} cookies 要发送的状态代码。	 */    sendCookies: emptyFn,    /**	 * 在发送所有响应数据后注册可选通知。	 * @param {Function} callback 在发送所有数据（带外）后调用的通知回调。	 * @param {Object} extraData 回调的附加参数。	 */    setEndOfSendNotification: emptyFn,    /**	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。	 */    get headerEncoding() {    },    /**	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。	 */    set headerEncoding(value) {    }};/** * 返回一个字符串，该字符串描述指定的 HTTP 状态代码的名称。 * @param {Number} code HTTP 状态代码。 * @returns 状态说明。 */HttpWorkerRequset.getStatusDescription = function(statusCode) {    return Http.STATUS_CODES[statusCode] || "Unknown";};module.exports = HttpWorkerRequset;
+
+var Http = require("http");
+
+/**
+ * 此抽象类定义由服务器用于处理请求的基本辅助方法和枚举。
+ * @abstract
+ * @class
+ * @remark 
+ * 此类是和底层 API 直接进行交互的内部类。
+ * 修改或继承此类，可以方便地将服务器模型移植到其它坏境中。
+ */
+function HttpWorkerRequset() {}
+
+function emptyFn() {}
+
+HttpWorkerRequset.prototype = {
+    constructor: HttpWorkerRequset,
+
+    /**
+	 * 终止与客户端的连接。
+     * @abstract
+	 */
+    closeConnection: emptyFn,
+
+    /**
+	 * 由运行库使用以通知 @HttpWorkerRequest 当前请求的请求处理已完成。
+     * @abstract
+	 */
+    endOfRequest: emptyFn,
+
+    /**
+	 * 将所有挂起的响应数据发送到客户端。
+	 * @param {Boolean} finalFlush 如果这将是最后一次刷新响应数据，则为 true；否则为 false。
+     * @abstract
+	 */
+    flushResponse: emptyFn,
+
+    /**
+	 * 返回当前正在执行的服务器应用程序的虚拟路径。
+	 * @returns {String} 当前应用程序的虚拟路径。
+	 */
+    getAppPath: function() {
+        return "/";
+    },
+
+    /**
+	 * 返回当前正在执行的服务器应用程序的物理路径。
+	 * @returns {String} 当前应用程序的物理路径。
+	 */
+    getAppPathTranslated: function() {
+        return "/";
+    },
+
+    /**
+	 * 在派生类中被重写时，返回当前 URL 的应用程序池 ID。
+	 * @returns {String} 返回应用程序池 ID。
+	 */
+    getAppPoolID: function() {
+        return null;
+    },
+
+    /**
+	 * 获取从客户端读入的字节数。
+	 * @returns {Number} 客户端读入的字节数。
+	 */
+    getBytesRead: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，从客户端发出的请求获取证书字段（以 X.509 标准指定）。
+	 * @returns {Buffer} 包含整个证书内容流的字节数组。
+	 */
+    getClientCertificate: emptyFn,
+
+    /**
+	 * 获取证书颁发者（以二进制格式表示）。
+	 * @returns {Buffer} 包含以二进制格式表示的证书颁发者的字节数组。
+	 */
+    getClientCertificateBinaryIssuer: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回用于编码客户端证书的编码。
+	 * @returns {Number} 表示为整数的证书编码。
+	 */
+    getClientCertificateEncoding: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，获取与客户端证书关联的 PublicKey 对象。
+	 * @returns {Buffer} 包含整个证书内容流的字节数组。
+	 */
+    getClientCertificatePublicKey: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，则获取证书开始生效的日期。此日期随区域设置的不同而不同。
+	 * @returns {Date} 表示证书生效时间的 Date 对象。
+	 */
+    getClientCertificateValidFrom: emptyFn,
+
+    /**
+	 * 获取证书到期日期。
+	 * @returns {Date} 表示证书失效日期的 Date 对象。
+	 */
+    getClientCertificateValidUntil: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回当前连接的 ID。
+	 * @returns {Number} 返回当前连接的 ID。
+	 */
+    getConnectionID: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回所请求的 URI 的虚拟路径。
+	 * @returns {String} 请求的 URI 的路径。
+	 */
+    getFilePath: emptyFn,
+
+    /**
+	 * 返回请求的 URI 的物理文件路径（并将其从虚拟路径转换成物理路径：例如，从"/proj1/page.aspx"转换成"c:\dir\page.aspx"）。
+	 * @returns {String} 请求的 URI 的已转换的物理文件路径。
+	 */
+    getFilePathTranslated: emptyFn,
+
+    /**
+	 * 返回请求标头的指定成员。
+	 * @returns {String} 请求标头中返回的 HTTP 谓词。
+	 */
+    getHttpVerbName: emptyFn,
+
+    /**
+	 * 提供对请求的 HTTP 版本（如"HTTP/1.1"）的访问。
+	 * @returns {String} 请求标头中返回的 HTTP 版本。
+	 */
+    getHttpVersion: emptyFn,
+
+    /**
+	 * 返回与指定的索引相对应的标准 HTTP 请求标头。
+	 * @returns {String} 标头的索引。
+	 */
+    getHeader: emptyFn,
+
+    /**
+	 * 请求标头中返回的服务器 IP 地址。
+	 * @returns {String} 请求标头中返回的服务器 IP 地址。
+	 */
+    getLocalAddress: emptyFn,
+
+    /**
+	 * 请求标头中返回的服务器端口号。
+	 * @returns {String} 请求标头中返回的服务器端口号。
+	 */
+    getLocalPort: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回 HTTP 协议（HTTP 或 HTTPS）。
+	 * @returns {String} 如果使用了 SSL ，是HTTPS；否则，为 HTTP。
+	 */
+    getProtocol: emptyFn,
+
+    /**
+	 * 返回请求 URL 中指定的查询字符串。
+	 * @returns {String} 请求查询字符串。
+	 */
+    getQueryString: emptyFn,
+
+    /**
+	 * 返回附加了查询字符串的请求标头中包含的 URL 路径。
+	 * @returns {String} 请求标头的原始 URL 路径。
+	 */
+    getRawUrl: emptyFn,
+
+    /**
+	 * 提供对请求标头的指定成员的访问。
+	 * @returns {String} 客户端的 IP 地址。
+	 */
+    getRemoteAddress: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回客户端计算机的名称。
+	 * @returns {String} 客户端计算机的名称。
+	 */
+    getRemoteName: emptyFn,
+
+    /**
+	 * 提供对请求标头的指定成员的访问。
+	 * @returns {Number} 客户端的 HTTP 端口号。
+	 */
+    getRemotePort: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回请求的原因。
+	 * @returns {Number} 原因代码。
+	 */
+    getRequestReason: emptyFn,
+
+    /**
+	 * 在派生类中被重写时，返回本地服务器的名称。
+	 * @returns {Number} 本地服务器的名称。
+	 */
+    getServerName: emptyFn,
+
+    /**
+	 * 从与请求关联的服务器变量词典返回单个服务器变量。
+	 * @param {String} name 请求的服务器变量的名称。
+	 * @returns {Number} 请求的服务器变量。
+	 */
+    getServerVariable: emptyFn,
+
+    /**
+	 * 返回请求的 URI 的虚拟路径。
+	 * @returns {String} 请求的 URI 的路径。
+	 */
+    getUriPath: emptyFn,
+
+    /**
+	 * 返回一个值，该值指示是否已为当前的请求将 HTTP 响应标头发送到客户端。
+	 * @returns {Boolean} 如果 HTTP 响应标头已发送到客户端，则为 true；否则，为 false。
+	 */
+    headersSent: emptyFn,
+
+    /**
+	 * 返回一个值，该值指示客户端连接是否仍处于活动状态。
+	 * @returns {Boolean} 如果客户端连接仍处于活动状态，则为 true；否则，为 false。
+	 */
+    isClientConnected: emptyFn,
+
+    /**
+	 * 返回一个指示连接是否使用 SSL 的值。
+	 * @returns {Boolean} 如果连接是 SSL 连接，则为 true；否则为 false。默认值为 false。
+	 */
+    isSecure: emptyFn,
+
+    /**
+	 * 返回与指定虚拟路径相对应的物理路径。
+	 * @param {String} virtualPath 虚拟路径。
+	 * @returns {String} 参数中指定的虚拟路径相对应的物理路径。
+	 */
+    mapPath: emptyFn,
+
+    /**
+	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。
+	 * @param {Number} contentLength 响应的长度（以字节为单位）。
+	 */
+    sendCalculatedContentLength: emptyFn,
+
+    /**
+	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。
+	 * @param {String} filename 要写入 HTTP 输出的文件名。
+	 * @param {Number} [offset=0] 文件中的位置，将从该位置开始将内容写入到 HTTP 输出中。
+	 * @param {Number} [length=buffer.length] 要传输的字节数。
+	 */
+    sendResponseFromFile: emptyFn,
+
+    /**
+	 * 将字节数组中指定数目的字节添加到响应。
+	 * @param {String} data 要发送的字节数组。
+	 * @param {Number} [length=data.length] 要发送的字节数（从第一个字节开始）。
+	 */
+    sendResponseFromMemory: emptyFn,
+
+    /**
+	 * 指定响应的 HTTP 状态代码和状态说明，例如 SendStatus(200, "Ok")。
+	 * @param {Number} statusCode 要发送的状态代码。
+	 * @param {String} statusDescription 要发送的状态说明。
+	 */
+    sendStatus: emptyFn,
+
+    /**
+	 * 将指定的 @HttpCookieCollection 输出到 HTTP 响应。
+	 * @param {HttpCookieCollection} cookies 要发送的状态代码。
+	 */
+    sendCookies: emptyFn,
+
+    /**
+	 * 在发送所有响应数据后注册可选通知。
+	 * @param {Function} callback 在发送所有数据（带外）后调用的通知回调。
+	 * @param {Object} extraData 回调的附加参数。
+	 */
+    setEndOfSendNotification: emptyFn,
+
+    /**
+	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。
+	 */
+    get headerEncoding() {
+
+    },
+
+    /**
+	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。
+	 */
+    set headerEncoding(value) {
+
+    }
+
+};
+
+/**
+ * 返回一个字符串，该字符串描述指定的 HTTP 状态代码的名称。
+ * @param {Number} code HTTP 状态代码。
+ * @returns 状态说明。
+ */
+HttpWorkerRequset.getStatusDescription = function(statusCode) {
+    return Http.STATUS_CODES[statusCode] || "Unknown";
+};
+
+module.exports = HttpWorkerRequset;
 });
 
 __tpack__.define("../../aspserver/lib/httpresponse.js", function(exports, module, require){
-var FS = require("fs");var HttpWorkerRequset = require("../../aspserver/lib/httpworkerrequest.js");var HttpUtility = require("../../aspserver/lib/httputility.js");var HttpCookie = require("../../aspserver/lib/httpcookie.js");var HttpCookieCollection = require("../../aspserver/lib/httpcookiecollection.js");/** * 封装来自服务器操作的 HTTP 响应信息。 * @class */function HttpResponse(httpWorkerRequest, context){	this._wr = httpWorkerRequest;	this.context = context;	this._buffers = [];		this.contentEncoding = httpWorkerRequest.contentEncoding;}HttpResponse.prototype = {    constructor: HttpResponse,	/**	 * 当前对象关联的 {@link HttpWorkerRequest} 对象。	 * @type HttpWorkerRequest	 * @private	 */	_wr: null,		/**	 * 当前对象的输出缓存对象。	 * @type Buffer[]	 * @private	 */	_buffers: null,		_statusCode: 200,		_statusDescription: null,		_raiseHeaderWrittenException: function(){		throw new Error('Can\'t set headers after they are sent.');	},		_writeHeaders: function(finalFlush){				var headers = this._headers || Object,			wr = this._wr;				// 发送 Http 状态。		wr.sendStatus(this.statusCode, this.statusDescription);				// 发送预定义的头。		for(var key in headers){			wr.sendHeader(key, headers[key]);		}				// 如果未发送一些字段，则自动生成。				//if(!('Content-Type' in headers)) {		//	wr.sendHeader('Content-Type', 'text/html; charset=' + this.contentEncoding);		//}				var connection = headers['connection'];		var chunk = false;				// 如果支持缓存，并且是最后一次发送，则生成 Content-Length 并关闭连接。		if(this.bufferOutput && finalFlush){						if(!('content-length' in headers)) {				wr.sendCalculatedContentLength(this._calculateContentLength());			}						if(!connection){				wr.sendHeader('Connection', connection = 'Close');			}						} else if('content-length' in headers){			if(!connection){				wr.sendHeader('Connection', connection = 'Close');			}		} else if(!headers['transfer-encoding']){			chunk = true;			wr.sendHeader('transfer-encoding', "Chunked");						if(!connection){				wr.sendHeader('Connection', connection = "Keep-Alive");			}		} else if(!connection){			chunk = /^chunk$/i.test(headers['transfer-encoding']);			wr.sendHeader('Connection', connection = chunk ? "Keep-Alive" : 'Close');		}				wr.setKeepAlive(!/^close$/i.test(connection), chunk);				if(this._cookies){			wr.sendCookies(this._cookies);		}				// 发送附加隐藏的 Cookie 。比如 Session 。		if(this._externalCookie){			wr.sendHeader('Set-Cookie', this._externalCookie);		}				if(!('date' in headers)) {			wr.sendHeader('Date', utcDate());		}				if(!('server' in headers)) {			wr.sendHeader('Server', wr.getServerName());		}				wr.endOfHeaderSent();				if('expect' in headers) {			wr.sendResponseFromMemory('');		}		},		_calculateContentLength: function(){		for(var i = 0, buffers = this._buffers, len = buffers.length, sum = 0; i < len; i++){			sum += buffers[i].length;		}		return sum;	},		_writeRaw: function(data){		this._buffers.push(data);				if(!this.bufferOutput) {			this.flush();		}	},		/**	 * 获取当前对象关联的 {@link HttpContext} 对象。	 * @type HttpContext	 */	context: null,		/**	 * 获取或设置一个值，该值指示是否有异步处理逻辑，并在这个异步逻辑完成后主动调用 end() 以结束请求。	 * @returns 如果有异步处理逻辑，则为 true；否则为 false。	 */	async: false,		// buffer		/**	 * 获取或设置一个值，该值指示是否缓冲输出并在处理完整个响应之后发送它。	 * @returns 如果缓冲了发送给客户端的输出，则为 true；否则为 false。	 */	bufferOutput: true,		/**	 * 获取或设置 Cache-Control HTTP 标头。	 * @returns {String} Cache-Control HTTP 标头。	 */	get cacheControl(){		return this.getHeader("Cache-Control");	},		/**	 * 获取或设置 Cache-Control HTTP 标头。	 * @returns {String} Cache-Control HTTP 标头。	 */	set cacheControl(value){		this.setHeader("Cache-Control", value);	},		// Charset		/**	 * 获取或设置向客户端输出的内容编码。	 * @type Encoding	 */	contentEncoding: null,		/**	 * 获取或设置输出流的 HTTP MIME 类型。	 * @returns {String} 输出流的 HTTP MIME 类型。默认值为"text/html"。	 */	get contentType(){		return this.getHeader("Content-Type") || "text/html";	},		/**	 * 获取或设置输出流的 HTTP MIME 类型。	 * @returns {String} 输出流的 HTTP MIME 类型。默认值为"text/html"。	 */	set contentType(value){		//if(/^text\/html/i.test(value) && !/\bcharset\b/i.test(value)){		//	value += '; charset=' + this.contentEncoding;		//}		this.setHeader("Content-Type", value);	},		/**	 * 获取或设置主体的大小。	 * @returns {Number} 可以是任何值或 OutputStream 的长度。	 */	get contentLength(){		var value = +this.getHeader("Content-Length");		return isNaN(value) ? -1 : value;	},		/**	 * 获取或设置主体的大小。	 * @returns {Number} 可以是任何值或 OutputStream 的长度。	 */	set contentLength(value){		this.setHeader("Content-Length", value.toString());	},		/**	 * 获取或设置传输方式。	 * @returns {Boolean}	 */	get chunked(){		var chunk = this.getHeader("Transfer-Encoding");		return chunk ? /^chunked$/i.test(chunk) : false;	},		/**	 * 获取或设置传输方式。	 * @returns {Boolean}	 */	set chunked(value){		if(value){			this.setHeader("Transfer-Encoding", 'Chunk');		} else {			this.removeHeader("Transfer-Encoding");		}	},		/**	 * 获取响应 Cookie 集合。	 * @returns {HttpCookieCollection} 响应 Cookie 集合。	 */	get cookies(){		return this._cookies || (this._cookies = new HttpCookieCollection());	},		/**	 * 获取指示当前是否存在 Cookie 的值。	 * @returns {Boolean} 如果存在 Cookie 则返回 true 。	 */	get hasCookies(){		if(!this._cookies){			return false;		}				for(var key in this._cookies){			if(!this._cookies.hasOwnProperty(key)){				return true;			}		}						return false;	},		/**	 * 获取或设置在浏览器上缓存的页过期之前的分钟数。如果用户在页面过期之前返回同一页，则显示缓存的版本。	 * @returns {Integer} 在页过期之前的分钟数。	 */	get expires(){		var value = this.getHeader("Expires");		if(value){			try{				value = new Date(value);				return new Date() - value;			} catch(e){							}		}				return -1;	},	/**	 * 获取或设置在浏览器上缓存的页过期之前的分钟数。如果用户在页面过期之前返回同一页，则显示缓存的版本。	 * @returns {Integer} 在页过期之前的分钟数。	 */	set expires(value){		var n = new Date();		n.setMinutes(n.getMinutes() + value);		this.setHeader("Expires", n.toUTCString());	},		/**	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。	 * @returns {Date} 该页过期时的日期和时间。	 */	get expiresAbsolute(){		return HttpUtility.getDateFromHeader(this.getHeader("Expires"));	},		/**	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。	 * @returns {Date} 该页过期时的日期和时间。	 */	set expiresAbsolute(value){		this.setHeader("Expires", value.toUTCString());	},		// Filter		// /**	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。	 // * @returns {Encoding} 一个编码，包含与当前标头的字符集有关的信息。	 // */	// get headerEncoding(){		// return this._wr.responseHeaderEncoding;	// },		// /**	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。	 // * @returns {Encoding} 一个编码，包含与当前标头的字符集有关的信息。	 // */	// set headerEncoding(value){		// this._wr.responseHeaderEncoding = value;	// },		/**	 * 获取响应标头的集合。	 * @returns {Object} 响应标头的集合。	 */	get headers(){		return this._headers || (this._headers = {});	},		/**	 * 获取一个值，通过该值指示客户端是否仍连接在服务器上。	 * @returns {Boolean} 如果客户端仍连接在服务器上则返回 true 。	 */	get isClientConnected(){		return this._wr.isClientConnected();	},		/**	 * 获取一个布尔值，该值指示客户端是否正在被传输到新的位置。	 * @returns {Boolean} 如果客户端正在被传输到新的位置则返回 true 。	 */	get isRequestBeingRedirected(){		return !!this.getHeader("Location");	},		// Output		/**	 * 启用到输出 HTTP 内容主体的二进制输出。	 * @returns {Stream} 内容正文。	 */	get outputStream(){		return this._wr.outputStream;	},		/**	 * 获取或设置 Http Location 标头的值。	 * @returns {String} 通过 HTTP Location 标头传输到客户端的绝对 URI。	 */	get redirectLocation(){		return this.getHeader("Location");	},		/**	 * 获取或设置 Http Location 标头的值。	 * @returns {String} 通过 HTTP Location 标头传输到客户端的绝对 URI。	 */	set redirectLocation(value){		this.setHeader("Location", value);	},		/**	 * 设置返回到客户端的 Status 栏。	 * @returns {String} 设置状态代码会使描述 HTTP 输出状态的字符串返回到客户端。默认值为 200 (OK)。	 */	get status(){		return this.statusCode + " " + this.statusDescription;	},		/**	 * 设置返回到客户端的 Status 栏。	 * @returns {String} 设置状态代码会使描述 HTTP 输出状态的字符串返回到客户端。默认值为 200 (OK)。	 */	set status(value){		var n = value.indexOf(' ');		this.statusCode = value.substr(0, n);		this.statusDescription = value.substr(n + 1);	},		/**	 * 获取或设置返回给客户端的输出的 HTTP 状态代码。	 * @returns {Integer} 表示返回到客户端的 HTTP 输出状态的整数。默认值为 200 (OK)。有关有效状态代码的列表，请参见 Http Status Codes（Http 状态代码）。	 */	get statusCode(){		return this._statusCode;	},		/**	 * 获取或设置返回给客户端的输出的 HTTP 状态代码。	 * @returns {Integer} 表示返回到客户端的 HTTP 输出状态的整数。默认值为 200 (OK)。有关有效状态代码的列表，请参见 Http Status Codes（Http 状态代码）。	 */	set statusCode(value){		if(this._wr.headersSent()) {			this._raiseHeaderWrittenException();		}		this._statusCode = value;	},		/**	 * 获取或设置返回给客户端的输出的 HTTP 状态字符串。	 * @returns {String} 一个字符串，描述返回给客户端的 HTTP 输出的状态。默认值为"OK"。	 */	get statusDescription(){		return this._statusDescription || HttpWorkerRequset.getStatusDescription(this._statusCode);	},		/**	 * 获取或设置返回给客户端的输出的 HTTP 状态代码。	 * @returns {String} 表示返回到客户端的 HTTP 输出状态的整数。默认值为 200 (OK)。有关有效状态代码的列表，请参见 Http Status Codes（Http 状态代码）。	 */	set statusDescription(value){		if(this._wr.headersSent()) {			this._raiseHeaderWrittenException();		}		this._statusDescription = value;	},		// Status		// SubStatusCode		// SuppressContent		/**	 * 获取或设置向客户端输出的 Last-Modified 字段。	 * @returns {Date} Last-Modified 字段。	 */	get LastModified(){		return HttpUtility.getDateFromHeader(this.getHeader("Last-Modified"));	},		/**	 * 获取或设置向客户端输出的 Last-Modified 字段。	 * @returns {Date} Last-Modified 字段。	 */	set LastModified(value){		this.setHeader("Last-Modified", value.toUTCString());	},        /**	 * 返回一个值，该值指示是否已为当前的请求将 HTTP 响应标头发送到客户端。	 * @returns {Boolean} 如果 HTTP 响应标头已发送到客户端，则为 true；否则，为 false。	 */	get headersSent() {	    return this._wr.headersSent();	},		/**	 * 将一个 HTTP 标头添加到输出流。	 * @param {String} name 要添加 *value* 的 HTTP 头名称。	 * @param {String} value 要添加到头中的字符串。	 * @returns {String} 头部内容。	 */	getHeader: function(name){		if (arguments.length < 1) {			throw new Error('`name` is required for getHeader().');		}		if (!this._headers) return;		return this._headers[name.toLowerCase()];	},		/**	 * 将一个 HTTP 标头添加到输出流。	 * @param {String} name 要添加 *value* 的 HTTP 头名称。	 * @param {String} value 要添加到头中的字符串。	 */	setHeader: function(name, value){		if (arguments.length < 2) {			throw new Error('`name` and `value` are required for setHeader().');		}		if (this._wr.headersSent()) {		    this._raiseHeaderWrittenException();		}				this.headers[name.toLowerCase()] = value;	},		/**	 * 将一个 HTTP 标头添加到输出流。	 * @param {String} name 要添加 *value* 的 HTTP 头名称。	 * @param {String} value 要添加到头中的字符串。	 * @returns {Boolean} 如果删除成功，返回 true， 否则返回 false。	 */	removeHeader: function(name){		if (arguments.length < 1) {		    throw new Error('`name` is required for removeHeader().');		}		if (this._wr.headersSent()) {		    this._raiseHeaderWrittenException();		}				return delete this.headers[name.toLowerCase()];	},		// AppendCookie	// AppendHeader	// AppendToLog	// ApplyAppPathModifier		/**	 * 将一个二进制字符串写入 HTTP 输出流。	 * @param {Buffer} buffer 要写入输出流的字节。	 * @param {Number} offset=0 *buffer* 中的从零开始的字节偏移量，从此处开始将字节复制到当前流。	 * @param {Number} count=buffer.length 要写入当前流的字节数。	 */	binaryWrite: function(buffer, offset, count){		if(offset !== undefined && count !== undefined){			buffer = buffer.slice(offset, offset + count);		}				this._writeRaw(buffer);	},		/**	 * 清除缓冲区流中的所有内容输出。	 */	clear: function(){		this._buffers.length = 0;	},		/**	 * 清除缓冲区流中的所有头。	 */	clearHeaders: function() {		if(this._wr.headersSent()) {			this._raiseHeaderWrittenException();        }				if(this._headers) {			for(var item in this._headers){				delete this._headers[item];			}		}		        this._statusCode = 200;        this._statusDescription = null;        this.removeHeader("content-type");	},		/**	 * 关闭到客户端的套接字连接。	 */	close: function(){		this._wr.closeConnection();	},		/**	 * 关闭到客户端的套接字连接。	 */	end: function(data){		if(data){			this.write(data);		}		this.context.applicationInstance.onEndRequest(this.context);		this.flush(true);		this._wr.endOfRequest();		//this.close();	},		/**	 * 向客户端发送当前所有缓冲的输出。	 * @param {Boolean} finalFlush 如果这将是最后一次刷新响应数据，则为 true；否则为 false。	 */	flush: function(finalFlush){			var buffers = this._buffers,			wr = this._wr,			contentEncoding = this.contentEncoding;		if (!wr.headersSent()) {			this._writeHeaders(finalFlush);		}				for(var i = 0, len = buffers.length; i < len; i++){			wr.sendContent(buffers[i], contentEncoding);		}				buffers.length = 0;		        wr.flushResponse(finalFlush);			},		/**	 * 将一个 HTTP PICS-Label 标头追加到输出流。	 * @param {String} value 要添加到 PICS-Label 标头的字符串。	 */	pics: function(value){		this.setHeader("PICS-Label", value);	},		/**	 * 将客户端重定向到新的 URL。指定新的 URL 并指定当前页的执行是否应终止。	 * @param {String} url 目标的位置。	 * @param {Boolean} endResponse 指示当前页的执行是否应终止。	 */	redirect: function(url, endResponse){		this.statusCode = 302;		this.redirectLocation = url;		if(endResponse) {			this.write('Object Moved To <a herf="' + url + '">' + url + '</a>');			this.end();		}	},		/**	 * 更新 Cookie 集合中的一个现有 Cookie。	 * @param {HttpCookie} cookie 集合中要更新的 Cookie。	 */	setCookie: function(cookie){		if(!(cookie instanceof HttpCookie)){			cookie = new HttpCookie(cookie);		}		this.cookies.add(cookie);	},		/**	 * 将指定的文件直接写入 HTTP 响应输出流，而不在内存中缓冲该文件。	 * @param {String} filename 要写入 HTTP 输出的文件名。	 * @param {Number} offset=0 文件中的位置，将从该位置开始将内容写入到 HTTP 输出中。	 * @param {Number} length=buffer.length 要传输的字节数。	 */	transmitFile: function(filename, offset, length){			filename = this._wr.mapPath(filename);				if(!FS.existsSync(filename)){			throw new Error('file not found: ' + filename);		}				this._wr.sendResponseFromFile(filename, offset, size);	},		/**	 * 将一个字符串写入 HTTP 响应输出流。	 * @param {String} value 要写入 HTTP 输出流的字符串。	 */	write: function(value){		this._writeRaw(new Buffer(String(value)));	},		/**	 * 将一个字符串进行 HTML 编码后写入 HTTP 响应输出流。	 * @param {String} value 要写入 HTTP 输出流的字符串。	 */	writeText: function(value){		this.write(HttpUtility.htmlEncode(value));	},		/**	 * 将指定文件的内容作为文件块直接写入 HTTP 响应输出流。	 * @param {String} filename 要写入 HTTP 输出的文件名。	 * @param {Number} offset=0 文件中将开始进行写入的字节位置。	 * @param {Number} size=buffer.length 要写入输出流的字节数。	 */	writeFile: function(filename, offset, size){			/* var me = this;				filename = this._wr.mapPath(filename);				if(!FS.existsSync(filename)){			throw new Error('file not found: ' + filename);		}			FS.readFile(filename, function(error, content) {			me.binaryWrite(content, offset, size);		});		 */			this.binaryWrite(FS.readFileSync(this._wr.mapPath(filename)), offset, size);	},		/**	 * 添加尾部头。	 * @param {Object} headers 头部信息。	 */	addTrailers: function(headers){		this._wr.addTrailers(headers);	},		writeHead: function(statusCode){		var reasonPhrase, headers, headerIndex;		if (typeof arguments[1] == 'string') {			reasonPhrase = arguments[1];			headerIndex = 2;		} else {			reasonPhrase = HttpWorkerRequset.getStatusDescription(statusCode);			headerIndex = 1;		}				this.statusCode = statusCode;		this.statusDescription = reasonPhrase;				var obj = arguments[headerIndex];		if (obj) {			for(var key in obj){				this.setHeader(key, obj[key]);			}		}	}	};var dateCache;function utcDate() {  if (!dateCache) {    var d = new Date();    dateCache = d.toUTCString();    setTimeout(function() {      dateCache = undefined;    }, 1000 - d.getMilliseconds());  }  return dateCache;}module.exports = HttpResponse;
+
+
+var FS = require("fs");
+var HttpWorkerRequset = require("../../aspserver/lib/httpworkerrequest.js");
+var HttpUtility = require("../../aspserver/lib/httputility.js");
+var HttpCookie = require("../../aspserver/lib/httpcookie.js");
+var HttpCookieCollection = require("../../aspserver/lib/httpcookiecollection.js");
+
+/**
+ * 封装来自服务器操作的 HTTP 响应信息。
+ * @class
+ */
+function HttpResponse(httpWorkerRequest, context){
+	this._wr = httpWorkerRequest;
+	this.context = context;
+	this._buffers = [];
+	
+	this.contentEncoding = httpWorkerRequest.contentEncoding;
+}
+
+HttpResponse.prototype = {
+
+    constructor: HttpResponse,
+
+	/**
+	 * 当前对象关联的 {@link HttpWorkerRequest} 对象。
+	 * @type HttpWorkerRequest
+	 * @private
+	 */
+	_wr: null,
+	
+	/**
+	 * 当前对象的输出缓存对象。
+	 * @type Buffer[]
+	 * @private
+	 */
+	_buffers: null,
+	
+	_statusCode: 200,
+	
+	_statusDescription: null,
+	
+	_raiseHeaderWrittenException: function(){
+		throw new Error('Can\'t set headers after they are sent.');
+	},
+	
+	_writeHeaders: function(finalFlush){
+		
+		var headers = this._headers || Object,
+			wr = this._wr;
+		
+		// 发送 Http 状态。
+		wr.sendStatus(this.statusCode, this.statusDescription);
+		
+		// 发送预定义的头。
+		for(var key in headers){
+			wr.sendHeader(key, headers[key]);
+		}
+		
+		// 如果未发送一些字段，则自动生成。
+		
+		//if(!('Content-Type' in headers)) {
+		//	wr.sendHeader('Content-Type', 'text/html; charset=' + this.contentEncoding);
+		//}
+		
+		var connection = headers['connection'];
+		var chunk = false;
+		
+		// 如果支持缓存，并且是最后一次发送，则生成 Content-Length 并关闭连接。
+		if(this.bufferOutput && finalFlush){
+			
+			if(!('content-length' in headers)) {
+				wr.sendCalculatedContentLength(this._calculateContentLength());
+			}
+			
+			if(!connection){
+				wr.sendHeader('Connection', connection = 'Close');
+			}
+				
+		} else if('content-length' in headers){
+			if(!connection){
+				wr.sendHeader('Connection', connection = 'Close');
+			}
+		} else if(!headers['transfer-encoding']){
+			chunk = true;
+			wr.sendHeader('transfer-encoding', "Chunked");
+			
+			if(!connection){
+				wr.sendHeader('Connection', connection = "Keep-Alive");
+			}
+		} else if(!connection){
+			chunk = /^chunk$/i.test(headers['transfer-encoding']);
+			wr.sendHeader('Connection', connection = chunk ? "Keep-Alive" : 'Close');
+		}
+		
+		wr.setKeepAlive(!/^close$/i.test(connection), chunk);
+		
+		if(this._cookies){
+			wr.sendCookies(this._cookies);
+		}
+		
+		// 发送附加隐藏的 Cookie 。比如 Session 。
+		if(this._externalCookie){
+			wr.sendHeader('Set-Cookie', this._externalCookie);
+		}
+		
+		if(!('date' in headers)) {
+			wr.sendHeader('Date', utcDate());
+		}
+		
+		if(!('server' in headers)) {
+			wr.sendHeader('Server', wr.getServerName());
+		}
+		
+		wr.endOfHeaderSent();
+		
+		if('expect' in headers) {
+			wr.sendResponseFromMemory('');
+		}
+	
+	},
+	
+	_calculateContentLength: function(){
+		for(var i = 0, buffers = this._buffers, len = buffers.length, sum = 0; i < len; i++){
+			sum += buffers[i].length;
+		}
+
+		return sum;
+	},
+	
+	_writeRaw: function(data){
+		this._buffers.push(data);
+		
+		if(!this.bufferOutput) {
+			this.flush();
+		}
+	},
+	
+	/**
+	 * 获取当前对象关联的 {@link HttpContext} 对象。
+	 * @type HttpContext
+	 */
+	context: null,
+	
+	/**
+	 * 获取或设置一个值，该值指示是否有异步处理逻辑，并在这个异步逻辑完成后主动调用 end() 以结束请求。
+	 * @returns 如果有异步处理逻辑，则为 true；否则为 false。
+	 */
+	async: false,
+	
+	// buffer
+	
+	/**
+	 * 获取或设置一个值，该值指示是否缓冲输出并在处理完整个响应之后发送它。
+	 * @returns 如果缓冲了发送给客户端的输出，则为 true；否则为 false。
+	 */
+	bufferOutput: true,
+	
+	/**
+	 * 获取或设置 Cache-Control HTTP 标头。
+	 * @returns {String} Cache-Control HTTP 标头。
+	 */
+	get cacheControl(){
+		return this.getHeader("Cache-Control");
+	},
+	
+	/**
+	 * 获取或设置 Cache-Control HTTP 标头。
+	 * @returns {String} Cache-Control HTTP 标头。
+	 */
+	set cacheControl(value){
+		this.setHeader("Cache-Control", value);
+	},
+	
+	// Charset
+	
+	/**
+	 * 获取或设置向客户端输出的内容编码。
+	 * @type Encoding
+	 */
+	contentEncoding: null,
+	
+	/**
+	 * 获取或设置输出流的 HTTP MIME 类型。
+	 * @returns {String} 输出流的 HTTP MIME 类型。默认值为"text/html"。
+	 */
+	get contentType(){
+		return this.getHeader("Content-Type") || "text/html";
+	},
+	
+	/**
+	 * 获取或设置输出流的 HTTP MIME 类型。
+	 * @returns {String} 输出流的 HTTP MIME 类型。默认值为"text/html"。
+	 */
+	set contentType(value){
+		//if(/^text\/html/i.test(value) && !/\bcharset\b/i.test(value)){
+		//	value += '; charset=' + this.contentEncoding;
+		//}
+		this.setHeader("Content-Type", value);
+	},
+	
+	/**
+	 * 获取或设置主体的大小。
+	 * @returns {Number} 可以是任何值或 OutputStream 的长度。
+	 */
+	get contentLength(){
+		var value = +this.getHeader("Content-Length");
+		return isNaN(value) ? -1 : value;
+	},
+	
+	/**
+	 * 获取或设置主体的大小。
+	 * @returns {Number} 可以是任何值或 OutputStream 的长度。
+	 */
+	set contentLength(value){
+		this.setHeader("Content-Length", value.toString());
+	},
+	
+	/**
+	 * 获取或设置传输方式。
+	 * @returns {Boolean}
+	 */
+	get chunked(){
+		var chunk = this.getHeader("Transfer-Encoding");
+		return chunk ? /^chunked$/i.test(chunk) : false;
+	},
+	
+	/**
+	 * 获取或设置传输方式。
+	 * @returns {Boolean}
+	 */
+	set chunked(value){
+		if(value){
+			this.setHeader("Transfer-Encoding", 'Chunk');
+		} else {
+			this.removeHeader("Transfer-Encoding");
+		}
+	},
+	
+	/**
+	 * 获取响应 Cookie 集合。
+	 * @returns {HttpCookieCollection} 响应 Cookie 集合。
+	 */
+	get cookies(){
+		return this._cookies || (this._cookies = new HttpCookieCollection());
+	},
+	
+	/**
+	 * 获取指示当前是否存在 Cookie 的值。
+	 * @returns {Boolean} 如果存在 Cookie 则返回 true 。
+	 */
+	get hasCookies(){
+		if(!this._cookies){
+			return false;
+		}
+		
+		for(var key in this._cookies){
+			if(!this._cookies.hasOwnProperty(key)){
+				return true;
+			}
+		}
+		
+		
+		return false;
+	},
+	
+	/**
+	 * 获取或设置在浏览器上缓存的页过期之前的分钟数。如果用户在页面过期之前返回同一页，则显示缓存的版本。
+	 * @returns {Integer} 在页过期之前的分钟数。
+	 */
+	get expires(){
+		var value = this.getHeader("Expires");
+		if(value){
+			try{
+				value = new Date(value);
+				return new Date() - value;
+			} catch(e){
+				
+			}
+		}
+		
+		return -1;
+	},
+
+	/**
+	 * 获取或设置在浏览器上缓存的页过期之前的分钟数。如果用户在页面过期之前返回同一页，则显示缓存的版本。
+	 * @returns {Integer} 在页过期之前的分钟数。
+	 */
+	set expires(value){
+		var n = new Date();
+		n.setMinutes(n.getMinutes() + value);
+		this.setHeader("Expires", n.toUTCString());
+	},
+	
+	/**
+	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。
+	 * @returns {Date} 该页过期时的日期和时间。
+	 */
+	get expiresAbsolute(){
+		return HttpUtility.getDateFromHeader(this.getHeader("Expires"));
+	},
+	
+	/**
+	 * 获取或设置从缓存中移除缓存信息的绝对日期和时间。
+	 * @returns {Date} 该页过期时的日期和时间。
+	 */
+	set expiresAbsolute(value){
+		this.setHeader("Expires", value.toUTCString());
+	},
+	
+	// Filter
+	
+	// /**
+	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。
+	 // * @returns {Encoding} 一个编码，包含与当前标头的字符集有关的信息。
+	 // */
+	// get headerEncoding(){
+		// return this._wr.responseHeaderEncoding;
+	// },
+	
+	// /**
+	 // * 获取或设置一个值，该对象表示当前标头输出流的编码。
+	 // * @returns {Encoding} 一个编码，包含与当前标头的字符集有关的信息。
+	 // */
+	// set headerEncoding(value){
+		// this._wr.responseHeaderEncoding = value;
+	// },
+	
+	/**
+	 * 获取响应标头的集合。
+	 * @returns {Object} 响应标头的集合。
+	 */
+	get headers(){
+		return this._headers || (this._headers = {});
+	},
+	
+	/**
+	 * 获取一个值，通过该值指示客户端是否仍连接在服务器上。
+	 * @returns {Boolean} 如果客户端仍连接在服务器上则返回 true 。
+	 */
+	get isClientConnected(){
+		return this._wr.isClientConnected();
+	},
+	
+	/**
+	 * 获取一个布尔值，该值指示客户端是否正在被传输到新的位置。
+	 * @returns {Boolean} 如果客户端正在被传输到新的位置则返回 true 。
+	 */
+	get isRequestBeingRedirected(){
+		return !!this.getHeader("Location");
+	},
+	
+	// Output
+	
+	/**
+	 * 启用到输出 HTTP 内容主体的二进制输出。
+	 * @returns {Stream} 内容正文。
+	 */
+	get outputStream(){
+		return this._wr.outputStream;
+	},
+	
+	/**
+	 * 获取或设置 Http Location 标头的值。
+	 * @returns {String} 通过 HTTP Location 标头传输到客户端的绝对 URI。
+	 */
+	get redirectLocation(){
+		return this.getHeader("Location");
+	},
+	
+	/**
+	 * 获取或设置 Http Location 标头的值。
+	 * @returns {String} 通过 HTTP Location 标头传输到客户端的绝对 URI。
+	 */
+	set redirectLocation(value){
+		this.setHeader("Location", value);
+	},
+	
+	/**
+	 * 设置返回到客户端的 Status 栏。
+	 * @returns {String} 设置状态代码会使描述 HTTP 输出状态的字符串返回到客户端。默认值为 200 (OK)。
+	 */
+	get status(){
+		return this.statusCode + " " + this.statusDescription;
+	},
+	
+	/**
+	 * 设置返回到客户端的 Status 栏。
+	 * @returns {String} 设置状态代码会使描述 HTTP 输出状态的字符串返回到客户端。默认值为 200 (OK)。
+	 */
+	set status(value){
+		var n = value.indexOf(' ');
+		this.statusCode = value.substr(0, n);
+		this.statusDescription = value.substr(n + 1);
+	},
+	
+	/**
+	 * 获取或设置返回给客户端的输出的 HTTP 状态代码。
+	 * @returns {Integer} 表示返回到客户端的 HTTP 输出状态的整数。默认值为 200 (OK)。有关有效状态代码的列表，请参见 Http Status Codes（Http 状态代码）。
+	 */
+	get statusCode(){
+		return this._statusCode;
+	},
+	
+	/**
+	 * 获取或设置返回给客户端的输出的 HTTP 状态代码。
+	 * @returns {Integer} 表示返回到客户端的 HTTP 输出状态的整数。默认值为 200 (OK)。有关有效状态代码的列表，请参见 Http Status Codes（Http 状态代码）。
+	 */
+	set statusCode(value){
+		if(this._wr.headersSent()) {
+			this._raiseHeaderWrittenException();
+		}
+		this._statusCode = value;
+	},
+	
+	/**
+	 * 获取或设置返回给客户端的输出的 HTTP 状态字符串。
+	 * @returns {String} 一个字符串，描述返回给客户端的 HTTP 输出的状态。默认值为"OK"。
+	 */
+	get statusDescription(){
+		return this._statusDescription || HttpWorkerRequset.getStatusDescription(this._statusCode);
+	},
+	
+	/**
+	 * 获取或设置返回给客户端的输出的 HTTP 状态代码。
+	 * @returns {String} 表示返回到客户端的 HTTP 输出状态的整数。默认值为 200 (OK)。有关有效状态代码的列表，请参见 Http Status Codes（Http 状态代码）。
+	 */
+	set statusDescription(value){
+		if(this._wr.headersSent()) {
+			this._raiseHeaderWrittenException();
+		}
+		this._statusDescription = value;
+	},
+	
+	// Status
+	
+	// SubStatusCode
+	
+	// SuppressContent
+	
+	/**
+	 * 获取或设置向客户端输出的 Last-Modified 字段。
+	 * @returns {Date} Last-Modified 字段。
+	 */
+	get LastModified(){
+		return HttpUtility.getDateFromHeader(this.getHeader("Last-Modified"));
+	},
+	
+	/**
+	 * 获取或设置向客户端输出的 Last-Modified 字段。
+	 * @returns {Date} Last-Modified 字段。
+	 */
+	set LastModified(value){
+		this.setHeader("Last-Modified", value.toUTCString());
+	},
+    
+    /**
+	 * 返回一个值，该值指示是否已为当前的请求将 HTTP 响应标头发送到客户端。
+	 * @returns {Boolean} 如果 HTTP 响应标头已发送到客户端，则为 true；否则，为 false。
+	 */
+	get headersSent() {
+	    return this._wr.headersSent();
+	},
+	
+	/**
+	 * 将一个 HTTP 标头添加到输出流。
+	 * @param {String} name 要添加 *value* 的 HTTP 头名称。
+	 * @param {String} value 要添加到头中的字符串。
+	 * @returns {String} 头部内容。
+	 */
+	getHeader: function(name){
+		if (arguments.length < 1) {
+			throw new Error('`name` is required for getHeader().');
+		}
+
+		if (!this._headers) return;
+
+		return this._headers[name.toLowerCase()];
+	},
+	
+	/**
+	 * 将一个 HTTP 标头添加到输出流。
+	 * @param {String} name 要添加 *value* 的 HTTP 头名称。
+	 * @param {String} value 要添加到头中的字符串。
+	 */
+	setHeader: function(name, value){
+		if (arguments.length < 2) {
+			throw new Error('`name` and `value` are required for setHeader().');
+		}
+
+		if (this._wr.headersSent()) {
+		    this._raiseHeaderWrittenException();
+		}
+		
+		this.headers[name.toLowerCase()] = value;
+	},
+	
+	/**
+	 * 将一个 HTTP 标头添加到输出流。
+	 * @param {String} name 要添加 *value* 的 HTTP 头名称。
+	 * @param {String} value 要添加到头中的字符串。
+	 * @returns {Boolean} 如果删除成功，返回 true， 否则返回 false。
+	 */
+	removeHeader: function(name){
+		if (arguments.length < 1) {
+		    throw new Error('`name` is required for removeHeader().');
+		}
+
+		if (this._wr.headersSent()) {
+		    this._raiseHeaderWrittenException();
+		}
+		
+		return delete this.headers[name.toLowerCase()];
+	},
+	
+	// AppendCookie
+	// AppendHeader
+	// AppendToLog
+	// ApplyAppPathModifier
+	
+	/**
+	 * 将一个二进制字符串写入 HTTP 输出流。
+	 * @param {Buffer} buffer 要写入输出流的字节。
+	 * @param {Number} offset=0 *buffer* 中的从零开始的字节偏移量，从此处开始将字节复制到当前流。
+	 * @param {Number} count=buffer.length 要写入当前流的字节数。
+	 */
+	binaryWrite: function(buffer, offset, count){
+		if(offset !== undefined && count !== undefined){
+			buffer = buffer.slice(offset, offset + count);
+		}
+		
+		this._writeRaw(buffer);
+	},
+	
+	/**
+	 * 清除缓冲区流中的所有内容输出。
+	 */
+	clear: function(){
+		this._buffers.length = 0;
+	},
+	
+	/**
+	 * 清除缓冲区流中的所有头。
+	 */
+	clearHeaders: function() {
+		if(this._wr.headersSent()) {
+			this._raiseHeaderWrittenException();
+        }
+		
+		if(this._headers) {
+			for(var item in this._headers){
+				delete this._headers[item];
+			}
+		}
+		
+        this._statusCode = 200;
+        this._statusDescription = null;
+        this.removeHeader("content-type");
+	},
+	
+	/**
+	 * 关闭到客户端的套接字连接。
+	 */
+	close: function(){
+		this._wr.closeConnection();
+	},
+	
+	/**
+	 * 关闭到客户端的套接字连接。
+	 */
+	end: function(data){
+		if(data){
+			this.write(data);
+		}
+		this.context.applicationInstance.onEndRequest(this.context);
+		this.flush(true);
+		this._wr.endOfRequest();
+		//this.close();
+	},
+	
+	/**
+	 * 向客户端发送当前所有缓冲的输出。
+	 * @param {Boolean} finalFlush 如果这将是最后一次刷新响应数据，则为 true；否则为 false。
+	 */
+	flush: function(finalFlush){
+	
+		var buffers = this._buffers,
+			wr = this._wr,
+			contentEncoding = this.contentEncoding;
+
+		if (!wr.headersSent()) {
+			this._writeHeaders(finalFlush);
+		}
+		
+		for(var i = 0, len = buffers.length; i < len; i++){
+			wr.sendContent(buffers[i], contentEncoding);
+		}
+		
+		buffers.length = 0;
+		
+        wr.flushResponse(finalFlush);
+		
+	},
+	
+	/**
+	 * 将一个 HTTP PICS-Label 标头追加到输出流。
+	 * @param {String} value 要添加到 PICS-Label 标头的字符串。
+	 */
+	pics: function(value){
+		this.setHeader("PICS-Label", value);
+	},
+	
+	/**
+	 * 将客户端重定向到新的 URL。指定新的 URL 并指定当前页的执行是否应终止。
+	 * @param {String} url 目标的位置。
+	 * @param {Boolean} endResponse 指示当前页的执行是否应终止。
+	 */
+	redirect: function(url, endResponse){
+		this.statusCode = 302;
+		this.redirectLocation = url;
+		if(endResponse) {
+			this.write('Object Moved To <a herf="' + url + '">' + url + '</a>');
+			this.end();
+		}
+	},
+	
+	/**
+	 * 更新 Cookie 集合中的一个现有 Cookie。
+	 * @param {HttpCookie} cookie 集合中要更新的 Cookie。
+	 */
+	setCookie: function(cookie){
+		if(!(cookie instanceof HttpCookie)){
+			cookie = new HttpCookie(cookie);
+		}
+		this.cookies.add(cookie);
+	},
+	
+	/**
+	 * 将指定的文件直接写入 HTTP 响应输出流，而不在内存中缓冲该文件。
+	 * @param {String} filename 要写入 HTTP 输出的文件名。
+	 * @param {Number} offset=0 文件中的位置，将从该位置开始将内容写入到 HTTP 输出中。
+	 * @param {Number} length=buffer.length 要传输的字节数。
+	 */
+	transmitFile: function(filename, offset, length){
+	
+		filename = this._wr.mapPath(filename);
+		
+		if(!FS.existsSync(filename)){
+			throw new Error('file not found: ' + filename);
+		}
+		
+		this._wr.sendResponseFromFile(filename, offset, size);
+	},
+	
+	/**
+	 * 将一个字符串写入 HTTP 响应输出流。
+	 * @param {String} value 要写入 HTTP 输出流的字符串。
+	 */
+	write: function(value){
+		this._writeRaw(new Buffer(String(value)));
+	},
+	
+	/**
+	 * 将一个字符串进行 HTML 编码后写入 HTTP 响应输出流。
+	 * @param {String} value 要写入 HTTP 输出流的字符串。
+	 */
+	writeText: function(value){
+		this.write(HttpUtility.htmlEncode(value));
+	},
+	
+	/**
+	 * 将指定文件的内容作为文件块直接写入 HTTP 响应输出流。
+	 * @param {String} filename 要写入 HTTP 输出的文件名。
+	 * @param {Number} offset=0 文件中将开始进行写入的字节位置。
+	 * @param {Number} size=buffer.length 要写入输出流的字节数。
+	 */
+	writeFile: function(filename, offset, size){
+	
+		/* var me = this;
+		
+		filename = this._wr.mapPath(filename);
+		
+		if(!FS.existsSync(filename)){
+			throw new Error('file not found: ' + filename);
+		}
+	
+		FS.readFile(filename, function(error, content) {
+			me.binaryWrite(content, offset, size);
+		});
+		 */
+	
+		this.binaryWrite(FS.readFileSync(this._wr.mapPath(filename)), offset, size);
+	},
+	
+	/**
+	 * 添加尾部头。
+	 * @param {Object} headers 头部信息。
+	 */
+	addTrailers: function(headers){
+		this._wr.addTrailers(headers);
+	},
+	
+	writeHead: function(statusCode){
+		var reasonPhrase, headers, headerIndex;
+
+		if (typeof arguments[1] == 'string') {
+			reasonPhrase = arguments[1];
+			headerIndex = 2;
+		} else {
+			reasonPhrase = HttpWorkerRequset.getStatusDescription(statusCode);
+			headerIndex = 1;
+		}
+		
+		this.statusCode = statusCode;
+		this.statusDescription = reasonPhrase;
+		
+		var obj = arguments[headerIndex];
+
+		if (obj) {
+			for(var key in obj){
+				this.setHeader(key, obj[key]);
+			}
+		}
+	}
+	
+};
+
+var dateCache;
+function utcDate() {
+  if (!dateCache) {
+    var d = new Date();
+    dateCache = d.toUTCString();
+    setTimeout(function() {
+      dateCache = undefined;
+    }, 1000 - d.getMilliseconds());
+  }
+  return dateCache;
+}
+
+module.exports = HttpResponse;
 });
 
 __tpack__.define("../../node-libs-browser/node_modules/sha.js/hash.js", function(exports, module, require){
@@ -17771,64 +19480,318 @@ each(['createCredentials'
 });
 
 __tpack__.define("../../aspserver/lib/httpsessionstate.js", function(exports, module, require){
-var Http = require("http");var Path = require("path");var Crypto = require("crypto");/** * 包含当前请求的会话状态值和会话级别设置。 * @class */function HttpSessionState(application) {
-    this._app = application;    this._sessionItems = {};    this._clearTimer = this.clearSession.bind(this);
-}HttpSessionState.prototype = {
+
+
+var Http = require("http");
+var Path = require("path");
+var Crypto = require("crypto");
+
+/**
+ * 包含当前请求的会话状态值和会话级别设置。
+ * @class
+ */
+function HttpSessionState(application) {
+    this._app = application;
+    this._sessionItems = {};
+    this._clearTimer = this.clearSession.bind(this);
+}
+
+HttpSessionState.prototype = {
 
     constructor: HttpSessionState,
-    _app: null,    /**	 * 实际存储的 SESSION 项。	 * @type {Object}	 */    _sessionItems: null,    _clearTimer: null,    /**	 * 获取当前 HttpSessionState 的默认超时时间。	 * @type {Integer}	 */    get timeout() {
+
+    _app: null,
+
+    /**
+	 * 实际存储的 SESSION 项。
+	 * @type {Object}
+	 */
+    _sessionItems: null,
+
+    _clearTimer: null,
+
+    /**
+	 * 获取当前 HttpSessionState 的默认超时时间。
+	 * @type {Integer}
+	 */
+    get timeout() {
         return this._app.timeout;
-    },    /**	 * 获取当前 HttpSessionState 的默认 Session 键。	 * @type {Integer}	 */    get sessionKey() {
+    },
+
+    /**
+	 * 获取当前 HttpSessionState 的默认 Session 键。
+	 * @type {Integer}
+	 */
+    get sessionKey() {
         return this._app.sessionKey;
-    },    /**	 * 获取当前 HttpSessionState 的默认 Session 键。	 * @type {Integer}	 */    get sessionCryptoKey() {
+    },
+
+    /**
+	 * 获取当前 HttpSessionState 的默认 Session 键。
+	 * @type {Integer}
+	 */
+    get sessionCryptoKey() {
         return this._app.sessionCryptoKey;
-    },    getRawSessionId: function (context) {
-        var cookie = context.request.getHeader('cookie');        var m = new RegExp('\\b' + this.sessionKey + '=(.*?)(;|$)').exec(cookie);        if (m) {
+    },
+
+    getRawSessionId: function (context) {
+        var cookie = context.request.getHeader('cookie');
+        var m = new RegExp('\\b' + this.sessionKey + '=(.*?)(;|$)').exec(cookie);
+
+        if (m) {
             return m[1];
-        }        return null;
-    },    setRawSessionId: function (context, id) {
-        var cookie = this.sessionKey + '=' + id;        if (this.timeout >= 0) {
-            var d = new Date();            d.setMinutes(d.getMinutes() + this.timeout);            cookie += '; Expires=' + d.toFullString();
-        }        cookie += '; HttpOnly';        context.response._externalCookie = cookie;
-    },    createSessionId: function (context, clock) {
+        }
+
+        return null;
+    },
+
+    setRawSessionId: function (context, id) {
+        var cookie = this.sessionKey + '=' + id;
+        if (this.timeout >= 0) {
+            var d = new Date();
+            d.setMinutes(d.getMinutes() + this.timeout);
+            cookie += '; Expires=' + d.toFullString();
+        }
+
+        cookie += '; HttpOnly';
+        context.response._externalCookie = cookie;
+    },
+
+    createSessionId: function (context, clock) {
         return context.request.userHostAddress + Date.now() + clock;
-    },    /**	 * 获取一个 {@link HttpContext} 对象的 SessionId 。	 * @param {HttpContext} context 要获取的 context 。	 * @returns {String} SessionId 。	 */    getSessionId: function (context) {
-        var id = this.getRawSessionId(context);        try {
-            var c = Crypto.createDecipher('aes128', this.sessionCryptoKey);            id = c.update(id, 'hex', 'utf8') + c.final('utf8');            return id;
+    },
+
+    /**
+	 * 获取一个 {@link HttpContext} 对象的 SessionId 。
+	 * @param {HttpContext} context 要获取的 context 。
+	 * @returns {String} SessionId 。
+	 */
+    getSessionId: function (context) {
+        var id = this.getRawSessionId(context);
+
+        try {
+
+            var c = Crypto.createDecipher('aes128', this.sessionCryptoKey);
+            id = c.update(id, 'hex', 'utf8') + c.final('utf8');
+            return id;
         } catch (e) {
             return null;
         }
-    },    /**	 * 绑定一个 {@link HttpContext} 对象的 SessionId 到存储区。	 * @param {HttpContext} context 要获取的 context 。	 * @returns {String} SessionId 。	 */    setSessionId: function (context, id) {
-        var c = Crypto.createCipher('aes128', this.sessionCryptoKey);        id = c.update(id, 'utf8', 'hex') + c.final('hex');        this.setRawSessionId(context, id);
-    },    /**	 * 获取一个 {@link HttpContext} 对象关联的 Session 对象。	 * @param {HttpContext} context 要获取的 context 。	 * @returns {Object} 返回 Session 对象。如果不存在则返回 null 。	 */    getSession: function (context) {
-        var sessionId = this.getSessionId(context);        return sessionId && this._sessionItems[sessionId];
-    },    /**
-     * 创建一个新的会话。	 * @param {HttpContext} context 要获取的 context 。
+    },
+
+    /**
+	 * 绑定一个 {@link HttpContext} 对象的 SessionId 到存储区。
+	 * @param {HttpContext} context 要获取的 context 。
+	 * @returns {String} SessionId 。
+	 */
+    setSessionId: function (context, id) {
+        var c = Crypto.createCipher('aes128', this.sessionCryptoKey);
+        id = c.update(id, 'utf8', 'hex') + c.final('hex');
+        this.setRawSessionId(context, id);
+    },
+
+    /**
+	 * 获取一个 {@link HttpContext} 对象关联的 Session 对象。
+	 * @param {HttpContext} context 要获取的 context 。
+	 * @returns {Object} 返回 Session 对象。如果不存在则返回 null 。
+	 */
+    getSession: function (context) {
+        var sessionId = this.getSessionId(context);
+        return sessionId && this._sessionItems[sessionId];
+    },
+
+    /**
+     * 创建一个新的会话。
+	 * @param {HttpContext} context 要获取的 context 。
      * @returns {String} 返回会话 ID。 
-     */    createSession: function (context) {
-        var clock = 0;        var id;        do {
+     */
+    createSession: function (context) {
+        var clock = 0;
+        var id;
+        do {
             id = this.createSessionId(context, clock++);
-        } while (id in this._sessionItems);        return id;
-    },    /**	 * 设置一个 {@link HttpContext} 对象关联的 Session 对象。	 * @param {HttpContext} context 要设置的 context 。	 * @param {Object} session 要设置的 Session 对象。	 */    setSession: function (context, session) {
-        var sessionId = this.createSession(context);        this.setSessionId(context, sessionId);        this._sessionItems[sessionId] = session;        this.resetTimeout();
-    },    /**
+        } while (id in this._sessionItems);
+
+        return id;
+    },
+
+    /**
+	 * 设置一个 {@link HttpContext} 对象关联的 Session 对象。
+	 * @param {HttpContext} context 要设置的 context 。
+	 * @param {Object} session 要设置的 Session 对象。
+	 */
+    setSession: function (context, session) {
+        var sessionId = this.createSession(context);
+        this.setSessionId(context, sessionId);
+
+        this._sessionItems[sessionId] = session;
+        this.resetTimeout();
+    },
+
+    /**
      * 清除所有会话信息。
-     */    clearSession: function () {
+     */
+    clearSession: function () {
         this._sessionItems = {};
-    },    /**
+    },
+
+    /**
      * 重置会话超时。
-     */    resetTimeout: function () {
+     */
+    resetTimeout: function () {
         if (this.timer) {
-            clearTimeout(this.timer);            this.timer = null;
-        }        if (this.timeout >= 0) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+
+        if (this.timeout >= 0) {
             this.timer = setTimeout(this._clearTimer, this.timeout * 60000);
         }
     }
-};module.exports = HttpSessionState;
+
+};
+
+
+module.exports = HttpSessionState;
 });
 
 __tpack__.define("../../aspserver/lib/httpcontext.js", function(exports, module, require){
-var Http = require("http");var Path = require("path");var Url = require("url");var FS = require("fs");var Util = require("util");var HttpRequest = require("../../aspserver/lib/httprequest.js");var HttpResponse = require("../../aspserver/lib/httpresponse.js");/** * 封装有关个别 HTTP 请求的所有 HTTP 特定的信息。 * @class */function HttpContext(httpWorkerRequest){	this.request = new HttpRequest(httpWorkerRequest, this);	this.response = new HttpResponse(httpWorkerRequest, this);}HttpContext.prototype = {    constructor: HttpContext,	/**	 * 为当前 HTTP 请求获取 {@link HttpRequest} 对象。	 * @type HttpRequest	 */	request: null,		/**	 *  为当前 HTTP 请求获取 {@link HttpResponse} 对象。	 * @type HttpResponse	 */	response: null,		/**	 * 为当前 HTTP 请求获取 {@link HttpApplication} 对象。	 * @type HttpApplication	 */	get applicationInstance() {		return this.request._wr.applicationInstance;	},		// /**	 // * 获取或设置负责处理 HTTP 请求的处理程序.	 // * @type HttpHandler	 // */	// handler: null,		/**	 * 获取可用于在 HTTP 请求过程中在 Module 和 Handler 之间组织和共享数据的键/值对象。	 * @returns {Object} 对象。	 */	get items(){		return this._items || (this._items = {});	},		/**	 * 为当前 HTTP 请求获取 HttpSessionState 对象。	 * @returns {Object} 当前 HTTP 请求的 HttpSessionState 对象。	 */	get session(){				var sessionState = this.applicationInstance._sessionState;				if(!sessionState){			var HttpSessionState = require("../../aspserver/lib/httpsessionstate.js");			this.applicationInstance._sessionState = sessionState = new HttpSessionState(this.applicationInstance);		}				// 获取当前匹配的 Session ID 。		var session = sessionState.getSession(this);				// 如果不存在 session，则创建 Session 。		if(!session){			sessionState.setSession(this, session = {});			this.applicationInstance.onSessionStart(this);		} 				return session;	},		/**	 * 为当前 HTTP 请求获取 HttpApplicationState 对象。	 * @returns {Object} 当前 HTTP 请求的 HttpApplicationState 对象。	 */	get application(){		return this.applicationInstance._applicationState || (this.applicationInstance._applicationState = {});	},		/**	 * 获取当前 HTTP 请求的初始时间戳。	 */	get timestamp(){		return this.request._wr.getRequestTimestamp();;	},		/**	 * 向客户端报告错误。	 * @param {Number} statusCode 错误码。	 * @param {Error} error 引发错误的原始异常。	 */	reportError: function (statusCode, error) {		this.applicationInstance.reportError(this, statusCode, error);	},		/**	 * 用于为请求指定处理程序。	 *  @param {HttpHandler} handler 应处理请求的对象。	 */	remapHandler: function(handler){		return handler.processRequest(this);	},		/**	 * 使用给定虚拟路径、路径信息、查询字符串信息和一个布尔值重写 URL，该布尔值用于指定是否将客户端文件路径设置为重写路径。	 * @param {String} path 内部重写路径。	 * @param {Boolean} rebaseClientPath 若要将用于客户端资源的文件路径设置为 *path*，则为 true；否则为 false。	 */	rewritePath: function(path, rebaseClientPath){			if(rebaseClientPath) {			this.context.response.redirect(path);			return;		}				// 清空 queryString 。		this.request.redirected = true;		this.request._queryString = null;		this.request._wr.rewritePath(path);		this.applicationInstance.remapHandler(this);	}	};	 module.exports = HttpContext;
+
+
+var Http = require("http");
+var Path = require("path");
+var Url = require("url");
+var FS = require("fs");
+var Util = require("util");
+var HttpRequest = require("../../aspserver/lib/httprequest.js");
+var HttpResponse = require("../../aspserver/lib/httpresponse.js");
+
+/**
+ * 封装有关个别 HTTP 请求的所有 HTTP 特定的信息。
+ * @class
+ */
+function HttpContext(httpWorkerRequest){
+	this.request = new HttpRequest(httpWorkerRequest, this);
+	this.response = new HttpResponse(httpWorkerRequest, this);
+}
+
+HttpContext.prototype = {
+
+    constructor: HttpContext,
+
+	/**
+	 * 为当前 HTTP 请求获取 {@link HttpRequest} 对象。
+	 * @type HttpRequest
+	 */
+	request: null,
+	
+	/**
+	 *  为当前 HTTP 请求获取 {@link HttpResponse} 对象。
+	 * @type HttpResponse
+	 */
+	response: null,
+	
+	/**
+	 * 为当前 HTTP 请求获取 {@link HttpApplication} 对象。
+	 * @type HttpApplication
+	 */
+	get applicationInstance() {
+		return this.request._wr.applicationInstance;
+	},
+	
+	// /**
+	 // * 获取或设置负责处理 HTTP 请求的处理程序.
+	 // * @type HttpHandler
+	 // */
+	// handler: null,
+	
+	/**
+	 * 获取可用于在 HTTP 请求过程中在 Module 和 Handler 之间组织和共享数据的键/值对象。
+	 * @returns {Object} 对象。
+	 */
+	get items(){
+		return this._items || (this._items = {});
+	},
+	
+	/**
+	 * 为当前 HTTP 请求获取 HttpSessionState 对象。
+	 * @returns {Object} 当前 HTTP 请求的 HttpSessionState 对象。
+	 */
+	get session(){
+		
+		var sessionState = this.applicationInstance._sessionState;
+		
+		if(!sessionState){
+			var HttpSessionState = require("../../aspserver/lib/httpsessionstate.js");
+			this.applicationInstance._sessionState = sessionState = new HttpSessionState(this.applicationInstance);
+		}
+		
+		// 获取当前匹配的 Session ID 。
+		var session = sessionState.getSession(this);
+		
+		// 如果不存在 session，则创建 Session 。
+		if(!session){
+			sessionState.setSession(this, session = {});
+			this.applicationInstance.onSessionStart(this);
+		} 
+		
+		return session;
+	},
+	
+	/**
+	 * 为当前 HTTP 请求获取 HttpApplicationState 对象。
+	 * @returns {Object} 当前 HTTP 请求的 HttpApplicationState 对象。
+	 */
+	get application(){
+		return this.applicationInstance._applicationState || (this.applicationInstance._applicationState = {});
+	},
+	
+	/**
+	 * 获取当前 HTTP 请求的初始时间戳。
+	 */
+	get timestamp(){
+		return this.request._wr.getRequestTimestamp();;
+	},
+	
+	/**
+	 * 向客户端报告错误。
+	 * @param {Number} statusCode 错误码。
+	 * @param {Error} error 引发错误的原始异常。
+	 */
+	reportError: function (statusCode, error) {
+		this.applicationInstance.reportError(this, statusCode, error);
+	},
+	
+	/**
+	 * 用于为请求指定处理程序。
+	 *  @param {HttpHandler} handler 应处理请求的对象。
+	 */
+	remapHandler: function(handler){
+		return handler.processRequest(this);
+	},
+	
+	/**
+	 * 使用给定虚拟路径、路径信息、查询字符串信息和一个布尔值重写 URL，该布尔值用于指定是否将客户端文件路径设置为重写路径。
+	 * @param {String} path 内部重写路径。
+	 * @param {Boolean} rebaseClientPath 若要将用于客户端资源的文件路径设置为 *path*，则为 true；否则为 false。
+	 */
+	rewritePath: function(path, rebaseClientPath){
+	
+		if(rebaseClientPath) {
+			this.context.response.redirect(path);
+			return;
+		}
+		
+		// 清空 queryString 。
+		this.request.redirected = true;
+		this.request._queryString = null;
+		this.request._wr.rewritePath(path);
+		this.applicationInstance.remapHandler(this);
+	}
+	
+};
+	 
+module.exports = HttpContext;
 });
 
 __tpack__.define("../../aspserver/lib/httpapplication.js", function(exports, module, require){
@@ -18198,7 +20161,644 @@ module.exports = HttpApplication;
 });
 
 __tpack__.define("../../aspserver/lib/defaulthttpworkerrequest.js", function(exports, module, require){
-var Path = require("path");var Url = require("url");var HttpWorkerRequset = require("../../aspserver/lib/httpworkerrequest.js");/** * 基于默认坏境支持实现的 HttpWorkerRequset 类。 * @class * @extends HttpWorkerRequset */function DefaultHttpWorkerRequest(request, response, application){		var me = this;	me._req = request;	me._res = response;	me.applicationInstance = application;		// 初始化 request	request.addListener("data", function(data) {		if(!me._entityBodys) {			me._entityBodys = [];			me._entityBodys.count = 0;		}				me._entityBodys.push(data);		me._entityBodys.count += data.length;		if (me._entityBodys.count.length > 1e6) {			// FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST			me.closeConnection();		}	});		var path = me._path = Url.parse(request.url, false);		try{		path.pathname = decodeURIComponent(path.pathname);	}catch(e){		}	// 根据路径搜索匹配的虚拟路径。	for(var virtualPath in application.virtualPaths) {		if((path.pathname + "/").indexOf(virtualPath + "/") == 0) {			me.appPath = virtualPath;			me.appPhysicalPath = application.virtualPaths[virtualPath];			return;		}	}	me.appPath = "";	me.appPhysicalPath = application.physicalPath;}DefaultHttpWorkerRequest.prototype = {    __proto__: HttpWorkerRequset.prototype,    constructor: DefaultHttpWorkerRequest,	_req: null,		_res: null,		_path: null,		_entityBodys: null,		applicationInstance: null,		/**	 * 获取传入的 HTTP 实体主体的内容。	 * @returns {Stream} 请求正文。	 */	get inputStream(){		return this._res;	},		/**	 * 启用到输出 HTTP 内容主体的二进制输出。	 * @returns {Stream} 内容正文。	 */	get outputStream(){		return this._res;	},		/**	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。	 */ 	get headerEncoding(){		return this.applicationInstance.headerEncoding;	},		/**	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。	 */ 	set contentEncoding(value){		this._req.setEncoding(value);	},		/**	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。	 */ 	get contentEncoding(){		return this.applicationInstance.contentEncoding;	},		/**	 * 终止与客户端的连接。	 */	closeConnection: function(){		this._req.connection.destroy();	},		/**	 * 返回当前正在执行的服务器应用程序的虚拟路径。	 * @returns {String} 当前应用程序的虚拟路径。	 */	getAppPath: function(){		return this.appPath;	},		/**	 * 返回当前正在执行的服务器应用程序的物理路径。	 * @returns {String} 当前应用程序的物理路径。	 */	getAppPathTranslated: function(){		return this.appPhysicalPath;	},		/**	 * 在派生类中被重写时，返回当前 URL 的应用程序池 ID。	 * @returns {String} 返回应用程序池 ID。	 */	getAppPoolID: function(){		return this.applicationInstance.id;	},		/**	 * 获取从客户端读入的字节数。	 * @returns {Number} 客户端读入的字节数。	 */	getBytesRead: function(){		return this._req.connection.bytesRead;	},		/**	 * 在派生类中被重写时，从客户端发出的请求获取证书字段（以 X.509 标准指定）。	 * @returns {Buffer} 包含整个证书内容流的字节数组。	 */	getClientCertificate: function(){		return null;	},		/**	 * 获取证书颁发者（以二进制格式表示）。	 * @returns {Buffer} 包含以二进制格式表示的证书颁发者的字节数组。	 */	getClientCertificateBinaryIssuer: function(){		return null;	},		/**	 * 在派生类中被重写时，返回用于编码客户端证书的编码。	 * @returns {Number} 表示为整数的证书编码。	 */	getClientCertificateEncoding: function(){		return null;	},		/**	 * 在派生类中被重写时，获取与客户端证书关联的 PublicKey 对象。	 * @returns {Buffer} 包含整个证书内容流的字节数组。	 */	getClientCertificatePublicKey: function(){		return null;	},		/**	 * 在派生类中被重写时，则获取证书开始生效的日期。此日期随区域设置的不同而不同。	 * @returns {Date} 表示证书生效时间的 Date 对象。	 */	getClientCertificateValidFrom: function(){		return null;	},		/**	 * 获取证书到期日期。	 * @returns {Date} 表示证书失效日期的 Date 对象。	 */	getClientCertificateValidUntil: function(){		return null;	},		/**	 * 在派生类中被重写时，返回当前连接的 ID。	 * @returns {Number} 始终返回 0。	 */	getConnectionID: function(){		return 0;	},		/**	 * 在派生类中被重写时，返回所请求的 URI 的虚拟路径。	 * @returns {String} 请求的 URI 的路径。	 */	getFilePath: function(){		return this._path.pathname;	},		/**	 * 返回请求的 URI 的物理文件路径（并将其从虚拟路径转换成物理路径：例如，从"/proj1/page.aspx"转换成"c:\dir\page.aspx"）。	 * @returns {String} 请求的 URI 的已转换的物理文件路径。	 */	getFilePathTranslated: function(){		return this.mapPath(this._path.pathname);	},		/**	 * 返回请求标头的指定成员。	 * @returns {String} 请求标头中返回的 HTTP 谓词。	 */	getHttpVerbName: function(){		return this._req.method;	},		/**	 * 提供对请求的 HTTP 版本（如"HTTP/1.1"）的访问。	 * @returns {String} 请求标头中返回的 HTTP 版本。	 */	getHttpVersion: function(){		return 'HTTP/' + this._req.httpVersion;	},		/**	 * 返回指定字段的 HTTP 请求标头。	 * @param {String} name 标头的名称。	 * @returns {String} HTTP 请求标头。	 */	getRequestHeader: function(name){		return this._req.headers[name.toLowerCase()];	},		/**	 * 返回 HTTP 请求标头。	 * @returns {Object} 获取请求头对象。	 */	getAllRequestHeaders: function(){		return this._req.headers || {};	},		/**	 * 请求标头中返回的服务器 IP 地址。	 * @returns {String} 请求标头中返回的服务器 IP 地址。	 */	getLocalAddress: function(){		var addr = this._req.connection.server.address();		return addr ? addr.address : null;	},		/**	 * 请求标头中返回的服务器端口号。	 * @returns {String} 请求标头中返回的服务器端口号。	 */	getLocalPort: function(){		var addr = this._req.connection.server.address();		return addr ? addr.port : 0;	},		/**	 * 在派生类中被重写时，返回 HTTP 协议（HTTP 或 HTTPS）。	 * @returns {String} 如果使用了 SSL ，是HTTPS；否则，为 HTTP。	 */	getProtocol: function(){		return this.isSecure() ? "http" : "https";	},		/**	 * 返回请求 URL 中指定的查询字符串。	 * @returns {String} 请求查询字符串。	 */	getQueryString: function(){		return this._path.query || "";	},		/**	 * 返回附加了查询字符串的请求标头中包含的 URL 路径。	 * @returns {String} 请求标头的原始 URL 路径。	 */	getRawUrl: function(){		return this._path.href;	},		/**	 * 获取请求的开始时间。	 * @returns {Date} 一个开始时间。	 */	getRequestTimestamp: function(){		return this._req.connection._idleStart;	},		/**	 * 提供对请求标头的指定成员的访问。	 * @returns {String} 客户端的 IP 地址。	 */	getRemoteAddress: function(){		return this._req.connection.remoteAddress;	},		/**	 * 在派生类中被重写时，返回客户端计算机的名称。	 * @returns {String} 客户端计算机的名称。	 */	getRemoteName: function(){		return this.getRemoteAddress();	},		/**	 * 提供对请求标头的指定成员的访问。	 * @returns {Number} 客户端的 HTTP 端口号。	 */	getRemotePort: function(){		return this._req.connection.remotePort;	},		/**	 * 在派生类中被重写时，返回请求的原因。	 * @returns {Number} 原因代码。	 */	getRequestReason: function(){		var header = this.getRequestHeader('X-Requested-With');		return header && /XMLHttpRequest/i.test(header) ? 1 : 0;	},		/**	 * 在派生类中被重写时，返回本地服务器的名称。	 * @returns {Number} 本地服务器的名称。	 */	getServerName: function(){		return "Node-AspServer/1.0";	},		/**	 * 从与请求关联的服务器变量词典返回单个服务器变量。	 * @param {String} name 请求的服务器变量的名称。	 * @returns {Number} 请求的服务器变量。	 */	getServerVariable: function(name){		return null;	},		/**	 * 返回请求的 URI 的虚拟路径。	 * @returns {String} 请求的 URI 的路径。	 */	getUriPath: function(){		return this._path.path;	},		/**	 * 返回一个值，该值指示客户端连接是否仍处于活动状态。	 * @returns {Boolean} 如果客户端连接仍处于活动状态，则为 true；否则，为 false。	 */	isClientConnected: function(){		return this._req.connection.destroyed;	},		/**	 * 返回一个指示连接是否使用 SSL 的值。	 * @returns {Boolean} 如果连接是 SSL 连接，则为 true；否则为 false。默认值为 false。	 */	isSecure: function(){		return false;	},		hasEntityBody: function(){		return this._entityBodys ? this._entityBodys.count > 0 : false;	},		getTotalEntityBodyLength: function(){		return this._entityBodys ? this._entityBodys.count : 0;	},		getEntityBody: function(){		return this._entityBodys && this._entityBodys.count > 0 ? Buffer.concat(this._entityBodys) : null;	},		/**	 * 返回与指定虚拟路径相对应的物理路径。	 * @param {String} virtualPath 虚拟路径。	 * @returns {String} 参数中指定的虚拟路径相对应的物理路径。	 */	mapPath: function(virtualPath){		return Path.normalize(this.appPhysicalPath + virtualPath.substr(this.appPath.length));	},		/**	 * 返回一个值，该值指示是否已为当前的请求将 HTTP 响应标头发送到客户端。	 * @returns {Boolean} 如果 HTTP 响应标头已发送到客户端，则为 true；否则，为 false。	 */	headersSent: function(){		return !!this._res._headerSent;	},		/**	 * 指定响应的 HTTP 状态代码和状态说明，例如 SendStatus(200, "Ok")。	 * @param {Number} statusCode 要发送的状态代码。	 * @param {String} statusDescription 要发送的状态说明。	 */	sendStatus: function(statusCode, statusDescription){		this._res._header = this.getHttpVersion() + ' ' + statusCode + ' ' + statusDescription + '\r\n';							if (statusCode === 204 || statusCode === 304 ||			  (100 <= statusCode && statusCode <= 199)) {			// RFC 2616, 10.2.5:			// The 204 response MUST NOT include a message-body, and thus is always			// terminated by the first empty line after the header fields.			// RFC 2616, 10.3.5:			// The 304 response MUST NOT contain a message-body, and thus is always			// terminated by the first empty line after the header fields.			// RFC 2616, 10.1 Informational 1xx:			// This class of status code indicates a provisional response,			// consisting only of the Status-Line and optional headers, and is			// terminated by an empty line.			this._res._hasBody = false;		}		// don't keep alive connections where the client expects 100 Continue		// but we sent a final status; they may put extra bytes on the wire.		if (this._res._expect_continue && ! this._res._sent100) {			this._res.shouldKeepAlive = false;		}	},		sendHeader: function(name, value){		this._res._header += name + ': '+ value + '\r\n';	},		/**	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。	 * @param {Number} contentLength 响应的长度（以字节为单位）。	 */	sendCalculatedContentLength: function(contentLength){		this._res._header += "Content-Length: " + contentLength + '\r\n';	},		/**	 * 将指定的 *HttpCookieCollection* 输出到 HTTP 响应。	 * @param {HttpCookieCollection} cookies 要发送的状态代码。	 */	sendCookies: function(cookies){		for(var key in cookies){			if(cookies.hasOwnProperty(key)){				var cookie = cookies[key];				if(typeof cookie === 'string'){					cookie = key + '=' + cookie;										try{						cookie = encodeURI(cookie);					}catch(e){										}									this._res._header += "Set-Cookie: " + cookie + '\r\n';				} else {					this._res._header += "Set-Cookie: " + cookie.toFullString() + '\r\n';				}			}		}	},		setKeepAlive: function(value, chunk){		if(value) {			this._res.shouldKeepAlive = true;		} else {			this._res._last = true;		}				this.chunkedEncoding = chunk;	},		/**	 * 由运行库使用以通知 *HttpWorkerRequest* 当前请求的请求头已发送完毕。	 */	endOfHeaderSent: function(){				for(var key in this.applicationInstance.headers){			this.sendHeader(key, this.applicationInstance.headers[key]);		}				this._res._headerSent = true;		this.sendResponseFromMemory(this._res._header + '\r\n', this.headerEncoding);	},		/**	 * 将正文字节添加到响应。同时添加 chunk 标记。	 * @param {String} data 要发送的字节数组。	 * @param {Number} encoding 要发送的编码。	 */	sendContent: function(data, encoding){				if (!this._res._hasBody) {			console.trace('This type of response MUST NOT have a body. ' +		  'Ignoring write() calls.');			return true;		}		if (data.length === 0) return false;		if (typeof data !== 'string' && !Buffer.isBuffer(data)) {			throw new TypeError('first argument must be a string or Buffer');		}				if (this.chunkedEncoding) {			if (typeof data === 'string') {			  return this.sendResponseFromMemory(Buffer.byteLength(data, encoding).toString(16) + '\r\n' + data + '\r\n', encoding);			} else {			  // buffer			  this.sendResponseFromMemory(data.length.toString(16) + '\r\n');			  this.sendResponseFromMemory(data);			  return this.sendResponseFromMemory('\r\n');			}		} else {			return this.sendResponseFromMemory(data, encoding);		}	},		/**	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。	 * @param {String} filename 要写入 HTTP 输出的文件名。	 * @param {Number} offset=0 文件中的位置，将从该位置开始将内容写入到 HTTP 输出中。	 * @param {Number} length=buffer.length 要传输的字节数。	 */	sendResponseFromFile: function(filename, offset, length){				var options = {			flags : "r", 			encoding : null		};				if(offset !== undefined) {			options.start = options;					if(length !== undefined) {				options.end = offset + length;			}		}				FS.createReadStream(filename, options).pipe(this._res);	},		/**	 * 将字节添加到响应。	 * @param {String} data 要发送的字节数组。	 * @param {Number} encoding 要发送的编码。	 */	sendResponseFromMemory: function(data, encoding){		this._res._writeRaw(data, encoding);		//this._res.write(data, encoding);	},		/**	 * 将所有挂起的响应数据发送到客户端。	 * @param {Boolean} finalFlush 如果这将是最后一次刷新响应数据，则为 true；否则为 false。	 */	flushResponse: function(finalFlush){	    if(finalFlush){	        if(this.chunkedEncoding){	            this.sendResponseFromMemory('0\r\n\r\n');	        }			this._res.end();		} else {	        this._res._flush();		}	},		/**	 *  由运行库使用以通知 *HttpWorkerRequest* 当前请求的请求处理已完成。	 */	endOfRequest: function(){			},		///**	// * 将头部添加到相应底部。	// * @param {String} headers 要发送的头部。	// */	//addTrailers: function(headers){	//	this._res.addTrailers(headers);	//},		/**	 * 在发送所有响应数据后注册可选通知。	 * @param {Function} callback 在发送所有数据（带外）后调用的通知回调。	 * @param {Object} extraData 回调的附加参数。	 */	setEndOfSendNotification: function(callback, extraData){		if(extraData){			callback = callback.bind(this, extraData);		}		this._res.on('close', callback);	},		getPathInfo: function(){		return '';	},		rewritePath: function(path){		var tp = this._path;		path = Url.parse(path, false);		try{			tp.pathname = decodeURIComponent(path.pathname);		}catch(e){			tp.pathname = path.pathname;		}				tp.path = tp.pathname;				if('hash' in path){			tp.hash = path;		}				if('search' in path){			tp.search = path.search;			tp.query = path.query;						tp.path += tp.search;		}			}	};module.exports = DefaultHttpWorkerRequest;
+
+
+var Path = require("path");
+var Url = require("url");
+var HttpWorkerRequset = require("../../aspserver/lib/httpworkerrequest.js");
+
+/**
+ * 基于默认坏境支持实现的 HttpWorkerRequset 类。
+ * @class
+ * @extends HttpWorkerRequset
+ */
+function DefaultHttpWorkerRequest(request, response, application){
+	
+	var me = this;
+
+	me._req = request;
+	me._res = response;
+	me.applicationInstance = application;
+	
+	// 初始化 request
+	request.addListener("data", function(data) {
+		if(!me._entityBodys) {
+			me._entityBodys = [];
+			me._entityBodys.count = 0;
+		}
+		
+		me._entityBodys.push(data);
+		me._entityBodys.count += data.length;
+		if (me._entityBodys.count.length > 1e6) {
+			// FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+			me.closeConnection();
+		}
+	});
+	
+	var path = me._path = Url.parse(request.url, false);
+	
+	try{
+		path.pathname = decodeURIComponent(path.pathname);
+	}catch(e){
+	
+	}
+
+	// 根据路径搜索匹配的虚拟路径。
+	for(var virtualPath in application.virtualPaths) {
+		if((path.pathname + "/").indexOf(virtualPath + "/") == 0) {
+			me.appPath = virtualPath;
+			me.appPhysicalPath = application.virtualPaths[virtualPath];
+			return;
+		}
+	}
+
+	me.appPath = "";
+	me.appPhysicalPath = application.physicalPath;
+
+}
+
+DefaultHttpWorkerRequest.prototype = {
+
+    __proto__: HttpWorkerRequset.prototype,
+
+    constructor: DefaultHttpWorkerRequest,
+
+	_req: null,
+	
+	_res: null,
+	
+	_path: null,
+	
+	_entityBodys: null,
+	
+	applicationInstance: null,
+	
+	/**
+	 * 获取传入的 HTTP 实体主体的内容。
+	 * @returns {Stream} 请求正文。
+	 */
+	get inputStream(){
+		return this._res;
+	},
+	
+	/**
+	 * 启用到输出 HTTP 内容主体的二进制输出。
+	 * @returns {Stream} 内容正文。
+	 */
+	get outputStream(){
+		return this._res;
+	},
+	
+	/**
+	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。
+	 */ 
+	get headerEncoding(){
+		return this.applicationInstance.headerEncoding;
+	},
+	
+	/**
+	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。
+	 */ 
+	set contentEncoding(value){
+		this._req.setEncoding(value);
+	},
+	
+	/**
+	 * 获取或设置一个编码，该对象表示当前标头输出流的编码。
+	 */ 
+	get contentEncoding(){
+		return this.applicationInstance.contentEncoding;
+	},
+	
+	/**
+	 * 终止与客户端的连接。
+	 */
+	closeConnection: function(){
+		this._req.connection.destroy();
+	},
+	
+	/**
+	 * 返回当前正在执行的服务器应用程序的虚拟路径。
+	 * @returns {String} 当前应用程序的虚拟路径。
+	 */
+	getAppPath: function(){
+		return this.appPath;
+	},
+	
+	/**
+	 * 返回当前正在执行的服务器应用程序的物理路径。
+	 * @returns {String} 当前应用程序的物理路径。
+	 */
+	getAppPathTranslated: function(){
+		return this.appPhysicalPath;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回当前 URL 的应用程序池 ID。
+	 * @returns {String} 返回应用程序池 ID。
+	 */
+	getAppPoolID: function(){
+		return this.applicationInstance.id;
+	},
+	
+	/**
+	 * 获取从客户端读入的字节数。
+	 * @returns {Number} 客户端读入的字节数。
+	 */
+	getBytesRead: function(){
+		return this._req.connection.bytesRead;
+	},
+	
+	/**
+	 * 在派生类中被重写时，从客户端发出的请求获取证书字段（以 X.509 标准指定）。
+	 * @returns {Buffer} 包含整个证书内容流的字节数组。
+	 */
+	getClientCertificate: function(){
+		return null;
+	},
+	
+	/**
+	 * 获取证书颁发者（以二进制格式表示）。
+	 * @returns {Buffer} 包含以二进制格式表示的证书颁发者的字节数组。
+	 */
+	getClientCertificateBinaryIssuer: function(){
+		return null;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回用于编码客户端证书的编码。
+	 * @returns {Number} 表示为整数的证书编码。
+	 */
+	getClientCertificateEncoding: function(){
+		return null;
+	},
+	
+	/**
+	 * 在派生类中被重写时，获取与客户端证书关联的 PublicKey 对象。
+	 * @returns {Buffer} 包含整个证书内容流的字节数组。
+	 */
+	getClientCertificatePublicKey: function(){
+		return null;
+	},
+	
+	/**
+	 * 在派生类中被重写时，则获取证书开始生效的日期。此日期随区域设置的不同而不同。
+	 * @returns {Date} 表示证书生效时间的 Date 对象。
+	 */
+	getClientCertificateValidFrom: function(){
+		return null;
+	},
+	
+	/**
+	 * 获取证书到期日期。
+	 * @returns {Date} 表示证书失效日期的 Date 对象。
+	 */
+	getClientCertificateValidUntil: function(){
+		return null;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回当前连接的 ID。
+	 * @returns {Number} 始终返回 0。
+	 */
+	getConnectionID: function(){
+		return 0;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回所请求的 URI 的虚拟路径。
+	 * @returns {String} 请求的 URI 的路径。
+	 */
+	getFilePath: function(){
+		return this._path.pathname;
+	},
+	
+	/**
+	 * 返回请求的 URI 的物理文件路径（并将其从虚拟路径转换成物理路径：例如，从"/proj1/page.aspx"转换成"c:\dir\page.aspx"）。
+	 * @returns {String} 请求的 URI 的已转换的物理文件路径。
+	 */
+	getFilePathTranslated: function(){
+		return this.mapPath(this._path.pathname);
+	},
+	
+	/**
+	 * 返回请求标头的指定成员。
+	 * @returns {String} 请求标头中返回的 HTTP 谓词。
+	 */
+	getHttpVerbName: function(){
+		return this._req.method;
+	},
+	
+	/**
+	 * 提供对请求的 HTTP 版本（如"HTTP/1.1"）的访问。
+	 * @returns {String} 请求标头中返回的 HTTP 版本。
+	 */
+	getHttpVersion: function(){
+		return 'HTTP/' + this._req.httpVersion;
+	},
+	
+	/**
+	 * 返回指定字段的 HTTP 请求标头。
+	 * @param {String} name 标头的名称。
+	 * @returns {String} HTTP 请求标头。
+	 */
+	getRequestHeader: function(name){
+		return this._req.headers[name.toLowerCase()];
+	},
+	
+	/**
+	 * 返回 HTTP 请求标头。
+	 * @returns {Object} 获取请求头对象。
+	 */
+	getAllRequestHeaders: function(){
+		return this._req.headers || {};
+	},
+	
+	/**
+	 * 请求标头中返回的服务器 IP 地址。
+	 * @returns {String} 请求标头中返回的服务器 IP 地址。
+	 */
+	getLocalAddress: function(){
+		var addr = this._req.connection.server.address();
+		return addr ? addr.address : null;
+	},
+	
+	/**
+	 * 请求标头中返回的服务器端口号。
+	 * @returns {String} 请求标头中返回的服务器端口号。
+	 */
+	getLocalPort: function(){
+		var addr = this._req.connection.server.address();
+		return addr ? addr.port : 0;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回 HTTP 协议（HTTP 或 HTTPS）。
+	 * @returns {String} 如果使用了 SSL ，是HTTPS；否则，为 HTTP。
+	 */
+	getProtocol: function(){
+		return this.isSecure() ? "http" : "https";
+	},
+	
+	/**
+	 * 返回请求 URL 中指定的查询字符串。
+	 * @returns {String} 请求查询字符串。
+	 */
+	getQueryString: function(){
+		return this._path.query || "";
+	},
+	
+	/**
+	 * 返回附加了查询字符串的请求标头中包含的 URL 路径。
+	 * @returns {String} 请求标头的原始 URL 路径。
+	 */
+	getRawUrl: function(){
+		return this._path.href;
+	},
+	
+	/**
+	 * 获取请求的开始时间。
+	 * @returns {Date} 一个开始时间。
+	 */
+	getRequestTimestamp: function(){
+		return this._req.connection._idleStart;
+	},
+	
+	/**
+	 * 提供对请求标头的指定成员的访问。
+	 * @returns {String} 客户端的 IP 地址。
+	 */
+	getRemoteAddress: function(){
+		return this._req.connection.remoteAddress;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回客户端计算机的名称。
+	 * @returns {String} 客户端计算机的名称。
+	 */
+	getRemoteName: function(){
+		return this.getRemoteAddress();
+	},
+	
+	/**
+	 * 提供对请求标头的指定成员的访问。
+	 * @returns {Number} 客户端的 HTTP 端口号。
+	 */
+	getRemotePort: function(){
+		return this._req.connection.remotePort;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回请求的原因。
+	 * @returns {Number} 原因代码。
+	 */
+	getRequestReason: function(){
+		var header = this.getRequestHeader('X-Requested-With');
+		return header && /XMLHttpRequest/i.test(header) ? 1 : 0;
+	},
+	
+	/**
+	 * 在派生类中被重写时，返回本地服务器的名称。
+	 * @returns {Number} 本地服务器的名称。
+	 */
+	getServerName: function(){
+		return "Node-AspServer/1.0";
+	},
+	
+	/**
+	 * 从与请求关联的服务器变量词典返回单个服务器变量。
+	 * @param {String} name 请求的服务器变量的名称。
+	 * @returns {Number} 请求的服务器变量。
+	 */
+	getServerVariable: function(name){
+		return null;
+	},
+	
+	/**
+	 * 返回请求的 URI 的虚拟路径。
+	 * @returns {String} 请求的 URI 的路径。
+	 */
+	getUriPath: function(){
+		return this._path.path;
+	},
+	
+	/**
+	 * 返回一个值，该值指示客户端连接是否仍处于活动状态。
+	 * @returns {Boolean} 如果客户端连接仍处于活动状态，则为 true；否则，为 false。
+	 */
+	isClientConnected: function(){
+		return this._req.connection.destroyed;
+	},
+	
+	/**
+	 * 返回一个指示连接是否使用 SSL 的值。
+	 * @returns {Boolean} 如果连接是 SSL 连接，则为 true；否则为 false。默认值为 false。
+	 */
+	isSecure: function(){
+		return false;
+	},
+	
+	hasEntityBody: function(){
+		return this._entityBodys ? this._entityBodys.count > 0 : false;
+	},
+	
+	getTotalEntityBodyLength: function(){
+		return this._entityBodys ? this._entityBodys.count : 0;
+	},
+	
+	getEntityBody: function(){
+		return this._entityBodys && this._entityBodys.count > 0 ? Buffer.concat(this._entityBodys) : null;
+	},
+	
+	/**
+	 * 返回与指定虚拟路径相对应的物理路径。
+	 * @param {String} virtualPath 虚拟路径。
+	 * @returns {String} 参数中指定的虚拟路径相对应的物理路径。
+	 */
+	mapPath: function(virtualPath){
+		return Path.normalize(this.appPhysicalPath + virtualPath.substr(this.appPath.length));
+	},
+	
+	/**
+	 * 返回一个值，该值指示是否已为当前的请求将 HTTP 响应标头发送到客户端。
+	 * @returns {Boolean} 如果 HTTP 响应标头已发送到客户端，则为 true；否则，为 false。
+	 */
+	headersSent: function(){
+		return !!this._res._headerSent;
+	},
+	
+	/**
+	 * 指定响应的 HTTP 状态代码和状态说明，例如 SendStatus(200, "Ok")。
+	 * @param {Number} statusCode 要发送的状态代码。
+	 * @param {String} statusDescription 要发送的状态说明。
+	 */
+	sendStatus: function(statusCode, statusDescription){
+		this._res._header = this.getHttpVersion() + ' ' + statusCode + ' ' + statusDescription + '\r\n';
+		
+			
+		if (statusCode === 204 || statusCode === 304 ||
+			  (100 <= statusCode && statusCode <= 199)) {
+			// RFC 2616, 10.2.5:
+			// The 204 response MUST NOT include a message-body, and thus is always
+			// terminated by the first empty line after the header fields.
+			// RFC 2616, 10.3.5:
+			// The 304 response MUST NOT contain a message-body, and thus is always
+			// terminated by the first empty line after the header fields.
+			// RFC 2616, 10.1 Informational 1xx:
+			// This class of status code indicates a provisional response,
+			// consisting only of the Status-Line and optional headers, and is
+			// terminated by an empty line.
+			this._res._hasBody = false;
+		}
+
+		// don't keep alive connections where the client expects 100 Continue
+		// but we sent a final status; they may put extra bytes on the wire.
+		if (this._res._expect_continue && ! this._res._sent100) {
+			this._res.shouldKeepAlive = false;
+		}
+	},
+	
+	sendHeader: function(name, value){
+		this._res._header += name + ': '+ value + '\r\n';
+	},
+	
+	/**
+	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。
+	 * @param {Number} contentLength 响应的长度（以字节为单位）。
+	 */
+	sendCalculatedContentLength: function(contentLength){
+		this._res._header += "Content-Length: " + contentLength + '\r\n';
+	},
+	
+	/**
+	 * 将指定的 *HttpCookieCollection* 输出到 HTTP 响应。
+	 * @param {HttpCookieCollection} cookies 要发送的状态代码。
+	 */
+	sendCookies: function(cookies){
+		for(var key in cookies){
+			if(cookies.hasOwnProperty(key)){
+				var cookie = cookies[key];
+				if(typeof cookie === 'string'){
+					cookie = key + '=' + cookie;
+					
+					try{
+						cookie = encodeURI(cookie);
+					}catch(e){
+					
+					}
+				
+					this._res._header += "Set-Cookie: " + cookie + '\r\n';
+				} else {
+					this._res._header += "Set-Cookie: " + cookie.toFullString() + '\r\n';
+				}
+			}
+		}
+	},
+	
+	setKeepAlive: function(value, chunk){
+		if(value) {
+			this._res.shouldKeepAlive = true;
+		} else {
+			this._res._last = true;
+		}
+		
+		this.chunkedEncoding = chunk;
+	},
+	
+	/**
+	 * 由运行库使用以通知 *HttpWorkerRequest* 当前请求的请求头已发送完毕。
+	 */
+	endOfHeaderSent: function(){
+		
+		for(var key in this.applicationInstance.headers){
+			this.sendHeader(key, this.applicationInstance.headers[key]);
+		}
+		
+		this._res._headerSent = true;
+		this.sendResponseFromMemory(this._res._header + '\r\n', this.headerEncoding);
+	},
+	
+	/**
+	 * 将正文字节添加到响应。同时添加 chunk 标记。
+	 * @param {String} data 要发送的字节数组。
+	 * @param {Number} encoding 要发送的编码。
+	 */
+	sendContent: function(data, encoding){
+		
+		if (!this._res._hasBody) {
+			console.trace('This type of response MUST NOT have a body. ' +
+		  'Ignoring write() calls.');
+			return true;
+		}
+
+		if (data.length === 0) return false;
+
+		if (typeof data !== 'string' && !Buffer.isBuffer(data)) {
+			throw new TypeError('first argument must be a string or Buffer');
+		}
+		
+		if (this.chunkedEncoding) {
+			if (typeof data === 'string') {
+			  return this.sendResponseFromMemory(Buffer.byteLength(data, encoding).toString(16) + '\r\n' + data + '\r\n', encoding);
+			} else {
+			  // buffer
+			  this.sendResponseFromMemory(data.length.toString(16) + '\r\n');
+			  this.sendResponseFromMemory(data);
+			  return this.sendResponseFromMemory('\r\n');
+			}
+		} else {
+			return this.sendResponseFromMemory(data, encoding);
+		}
+	},
+	
+	/**
+	 * 将 Content-Length HTTP 标头添加到小于或等于 2 GB 的消息正文的响应。
+	 * @param {String} filename 要写入 HTTP 输出的文件名。
+	 * @param {Number} offset=0 文件中的位置，将从该位置开始将内容写入到 HTTP 输出中。
+	 * @param {Number} length=buffer.length 要传输的字节数。
+	 */
+	sendResponseFromFile: function(filename, offset, length){
+		
+		var options = {
+			flags : "r", 
+			encoding : null
+		};
+		
+		if(offset !== undefined) {
+			options.start = options;
+		
+			if(length !== undefined) {
+				options.end = offset + length;
+			}
+		}
+		
+		FS.createReadStream(filename, options).pipe(this._res);
+	},
+	
+	/**
+	 * 将字节添加到响应。
+	 * @param {String} data 要发送的字节数组。
+	 * @param {Number} encoding 要发送的编码。
+	 */
+	sendResponseFromMemory: function(data, encoding){
+		this._res._writeRaw(data, encoding);
+		//this._res.write(data, encoding);
+	},
+	
+	/**
+	 * 将所有挂起的响应数据发送到客户端。
+	 * @param {Boolean} finalFlush 如果这将是最后一次刷新响应数据，则为 true；否则为 false。
+	 */
+	flushResponse: function(finalFlush){
+	    if(finalFlush){
+	        if(this.chunkedEncoding){
+	            this.sendResponseFromMemory('0\r\n\r\n');
+	        }
+			this._res.end();
+		} else {
+	        this._res._flush();
+		}
+	},
+	
+	/**
+	 *  由运行库使用以通知 *HttpWorkerRequest* 当前请求的请求处理已完成。
+	 */
+	endOfRequest: function(){
+		
+	},
+	
+	///**
+	// * 将头部添加到相应底部。
+	// * @param {String} headers 要发送的头部。
+	// */
+	//addTrailers: function(headers){
+	//	this._res.addTrailers(headers);
+	//},
+	
+	/**
+	 * 在发送所有响应数据后注册可选通知。
+	 * @param {Function} callback 在发送所有数据（带外）后调用的通知回调。
+	 * @param {Object} extraData 回调的附加参数。
+	 */
+	setEndOfSendNotification: function(callback, extraData){
+		if(extraData){
+			callback = callback.bind(this, extraData);
+		}
+		this._res.on('close', callback);
+	},
+	
+	getPathInfo: function(){
+		return '';
+	},
+	
+	rewritePath: function(path){
+		var tp = this._path;
+		path = Url.parse(path, false);
+
+		try{
+			tp.pathname = decodeURIComponent(path.pathname);
+		}catch(e){
+			tp.pathname = path.pathname;
+		}
+		
+		tp.path = tp.pathname;
+		
+		if('hash' in path){
+			tp.hash = path;
+		}
+		
+		if('search' in path){
+			tp.search = path.search;
+			tp.query = path.query;
+			
+			tp.path += tp.search;
+		}
+		
+	}
+	
+};
+
+module.exports = DefaultHttpWorkerRequest;
 });
 
 __tpack__.define("../../aspserver/lib/httpserver.js", function(exports, module, require){
@@ -18247,7 +20847,9 @@ function HttpServer() {
 HttpServer.prototype = {
 
 	__proto__: HttpApplication.prototype,
-	constructor: HttpServer,
+
+	constructor: HttpServer,
+
 	/**
 	 * 当前应用程序对应的实际的 Http.Server 对象。
 	 * @type {Http.Server}
@@ -18342,7 +20944,9 @@ function getApplicationId(application){
 }
 
 WebServer.prototype = {
-    constructor: WebServer,
+
+    constructor: WebServer,
+
 	log: function(e){
 		console.log(e);
 	},
