@@ -1,7 +1,7 @@
 {
     "name": "tpack",
-    "version": "1.0.0",
-    "description": "前端项目构建工具",
+    "version": "1.0.1",
+    "description": "基于规则的项目构建工具",
     "keywords": [
         "web",
         "pack",
@@ -27,9 +27,9 @@
         "email": "xuld@vip.qq.com"
     },
     "homepage": "https://github.com/tpack/require-global#readme",
-    "license": "SEE LICENSE IN LICENSE",
+    "license": "SEE LICENSE IN <LICENSE>",
     "dependencies": {
-        "tealweb": ">=0.0.5",
+        "tutils": ">=0.0.5",
         "chokidar": ">=1.0.3",
         "aspserver": ">=1.1.4",
         "require-global": ">=1.0.4"
