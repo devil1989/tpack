@@ -1,5 +1,13 @@
 /*
 
+	Uglify Js Error: 
+		Unexpected character '#'
+		At {2)
+
+*/
+
+/*
+
 	Coffee Compilation Error: 
 		unexpected identifier
 		At {2)
