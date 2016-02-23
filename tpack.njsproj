@@ -44,6 +44,7 @@
     <Content Include="test\libs\src\partB\b.es" />
     <Content Include="test\libs\src\partB\b.scss" />
     <Content Include="test\libs\src\partC\c.css" />
+    <Content Include="test\require\index.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
@@ -57,6 +58,7 @@
     <Folder Include="test\libs\src\partA\" />
     <Folder Include="test\libs\src\partB\" />
     <Folder Include="test\libs\src\partC\" />
+    <Folder Include="test\require\" />
     <Folder Include="test\_my\" />
     <Folder Include="_my\" />
   </ItemGroup>
@@ -64,6 +66,9 @@
     <Compile Include="bin\tpack-cli.js" />
     <Compile Include="lib\i18n\zh-cn.js" />
     <Compile Include="test\libs\src\partC\test-requirejs.main.js" />
+    <Compile Include="test\require\c.js" />
+    <Compile Include="test\require\b.js" />
+    <Compile Include="test\require\a.js" />
     <Compile Include="test\tpack.config.js" />
     <Compile Include="test\_my\build.js" />
     <Compile Include="lib\index.js" />

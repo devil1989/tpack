@@ -63,9 +63,9 @@ function test() {
 tpack.task("build", function () {
     compile();
     
-    // 压缩 CSS 和 JS。
-    tpack.src("*.css").pipe(require('tpack-clean-css'));
-    tpack.src("*.js").pipe(require('tpack-uglify-js'));
+    //// 压缩 CSS 和 JS。
+    //tpack.src("*.css").pipe(require('tpack-clean-css'));
+    //tpack.src("*.js").pipe(require('tpack-uglify-js'));
     
     tpack.build();
 });
