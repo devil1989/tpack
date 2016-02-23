@@ -1,0 +1,12 @@
+/*
+
+	Less Compilation Error: 
+		variable @b is undefined
+		At {2)
+
+*/
+
+.less {
+    @a: red;
+    color: @b; // @b is undefiend
+}

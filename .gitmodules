@@ -3,40 +3,40 @@
 	url = git@github.com:tpack/tpack-modular.git
 [submodule "node_modules/tpack-autoprefixer"]
 	path = node_modules/tpack-autoprefixer
-	url = https://github.com/tpack/tpack-autoprefixer.git
+	url = git@github.com:tpack/tpack-autoprefixer.git
 [submodule "node_modules/tpack-clean-css"]
 	path = node_modules/tpack-clean-css
-	url = https://github.com/tpack/tpack-clean-css.git
+	url = git@github.com:tpack/tpack-clean-css.git
 [submodule "node_modules/tpack-coffee-script"]
 	path = node_modules/tpack-coffee-script
-	url = https://github.com/tpack/tpack-coffee-script.git
+	url = git@github.com:tpack/tpack-coffee-script.git
 [submodule "node_modules/tpack-concat"]
 	path = node_modules/tpack-concat
-	url = https://github.com/tpack/tpack-concat.git
+	url = git@github.com:tpack/tpack-concat.git
 [submodule "node_modules/tpack-less"]
 	path = node_modules/tpack-less
-	url = https://github.com/tpack/tpack-less.git
+	url = git@github.com:tpack/tpack-less.git
 [submodule "node_modules/tpack-uglify-js"]
 	path = node_modules/tpack-uglify-js
-	url = https://github.com/tpack/tpack-uglify-js.git
+	url = git@github.com:tpack/tpack-uglify-js.git
 [submodule "node_modules/tpack-web"]
 	path = node_modules/tpack-web
-	url = https://github.com/tpack/tpack-web.git
+	url = git@github.com:tpack/tpack-web.git
 [submodule "node_modules/tpack-babel"]
 	path = node_modules/tpack-babel
-	url = https://github.com/tpack/tpack-babel.git
+	url = git@github.com:tpack/tpack-babel.git
 [submodule "node_modules/tpack-requirejs"]
 	path = node_modules/tpack-requirejs
-	url = https://github.com/tpack/tpack-requirejs.git
+	url = git@github.com:tpack/tpack-requirejs.git
 [submodule "node_modules/tpack-node-markdown"]
 	path = node_modules/tpack-node-markdown
-	url = https://github.com/tpack/tpack-node-markdown.git
+	url = git@github.com:tpack/tpack-node-markdown.git
 [submodule "node_modules/tpack-node-sass"]
 	path = node_modules/tpack-node-sass
-	url = https://github.com/tpack/tpack-node-sass.git
+	url = git@github.com:tpack/tpack-node-sass.git
 [submodule "node_modules/tpack-html-minifier"]
 	path = node_modules/tpack-html-minifier
-	url = https://github.com/tpack/tpack-html-minifier.git
+	url = git@github.com:tpack/tpack-html-minifier.git
 [submodule "node_modules/node-markdown"]
 	path = node_modules/node-markdown
-	url = https://github.com/tpack/tpack-node-markdown.git
+	url = git@github.com:tpack/tpack-node-markdown.git
