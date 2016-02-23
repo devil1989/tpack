@@ -1,6 +1,6 @@
-[submodule "node_modules/tpack-assets"]
-	path = node_modules/tpack-assets
-	url = https://github.com/tpack/tpack-assets.git
+[submodule "node_modules/tpack-modular"]
+	path = node_modules/tpack-modular
+	url = git@github.com:tpack/tpack-modular.git
 [submodule "node_modules/tpack-autoprefixer"]
 	path = node_modules/tpack-autoprefixer
 	url = https://github.com/tpack/tpack-autoprefixer.git
