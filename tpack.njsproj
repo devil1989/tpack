@@ -8,8 +8,7 @@
     <NodeExePath>../../node.exe</NodeExePath>
     <NodejsPort>9111</NodejsPort>
     <DebuggerPort>9113</DebuggerPort>
-    <ScriptArguments>
-    </ScriptArguments>
+    <ScriptArguments>server</ScriptArguments>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -61,6 +60,7 @@
   <ItemGroup>
     <Compile Include="bin\tpack-cli.js" />
     <Compile Include="i18n\zh-cn.js" />
+    <Compile Include="lib\server.js" />
     <Compile Include="lib\tasks.js" />
     <Compile Include="lib\tpack.config.js" />
     <Compile Include="test\modular\lib1\b.js" />

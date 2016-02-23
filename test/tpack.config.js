@@ -76,6 +76,7 @@ tpack.task("watch", function () {
 tpack.task("server", function () {
     compile();
     tpack.startServer({
-        proxy: "http://localhost:5389/aaa"
+        url: "http://localhost:8088",
+        proxy: "http://localhost:5389/html5/flight"
     });
 });
