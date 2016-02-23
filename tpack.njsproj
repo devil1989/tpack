@@ -21,7 +21,7 @@
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
-    <WorkingDirectory>.\test</WorkingDirectory>
+    <WorkingDirectory>.\test\modular</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
@@ -35,46 +35,41 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="test\include\body.inc" />
-    <Content Include="test\include\footer.inc" />
-    <Content Include="test\include\header.inc" />
-    <Content Include="test\include\stat.inc" />
-    <Content Include="test\libs\src\partA\a.es" />
-    <Content Include="test\libs\src\partA\a.less" />
-    <Content Include="test\libs\src\partB\b.es" />
-    <Content Include="test\libs\src\partB\b.scss" />
-    <Content Include="test\libs\src\partC\c.css" />
-    <Content Include="test\require\index.html" />
+    <Content Include="test\compilers\coffee-error.coffee" />
+    <Content Include="test\compilers\coffee.coffee" />
+    <Content Include="test\compilers\jsx-error.jsx" />
+    <Content Include="test\compilers\jsx.jsx" />
+    <Content Include="test\compilers\less-error.less" />
+    <Content Include="test\compilers\less.less" />
+    <Content Include="test\compilers\md.md" />
+    <Content Include="test\compilers\sass-error.scss" />
+    <Content Include="test\compilers\sass.scss" />
+    <Content Include="test\modular\index.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\" />
     <Folder Include="lib\" />
-    <Folder Include="lib\i18n\" />
+    <Folder Include="i18n\" />
+    <Folder Include="docs\" />
     <Folder Include="test\" />
-    <Folder Include="test\assets\" />
-    <Folder Include="test\include\" />
-    <Folder Include="test\libs\" />
-    <Folder Include="test\libs\src\" />
-    <Folder Include="test\libs\src\partA\" />
-    <Folder Include="test\libs\src\partB\" />
-    <Folder Include="test\libs\src\partC\" />
-    <Folder Include="test\require\" />
-    <Folder Include="test\_my\" />
+    <Folder Include="test\compilers\" />
+    <Folder Include="test\modular\" />
+    <Folder Include="test\modular\lib1\" />
+    <Folder Include="test\modular\lib2\" />
     <Folder Include="_my\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="bin\tpack-cli.js" />
-    <Compile Include="lib\i18n\zh-cn.js" />
-    <Compile Include="test\libs\src\partC\test-requirejs.main.js" />
-    <Compile Include="test\require\c.js" />
-    <Compile Include="test\require\b.js" />
-    <Compile Include="test\require\a.js" />
+    <Compile Include="i18n\zh-cn.js" />
+    <Compile Include="lib\tasks.js" />
+    <Compile Include="lib\tpack.config.js" />
+    <Compile Include="test\modular\lib1\b.js" />
+    <Compile Include="test\modular\lib2\d.js" />
+    <Compile Include="test\modular\lib2\c.js" />
+    <Compile Include="test\modular\lib1\a.js" />
     <Compile Include="test\tpack.config.js" />
-    <Compile Include="test\_my\build.js" />
     <Compile Include="lib\index.js" />
     <Compile Include="lib\builder.js" />
-    <Compile Include="test\_my\server.js" />
-    <Compile Include="test\libs\src\partC\c.js" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

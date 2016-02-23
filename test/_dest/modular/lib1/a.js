@@ -1,15 +1,16 @@
 var __tpack__ = __tpack__ || {
     modules: { __proto__: null },
     define: function(moduleName, factory) {
-        return __tpack__.modules[__tpack__.resolve(moduleName)] = {
+		var url = __tpack__.resolve(moduleName);
+        return __tpack__.modules[url] = {
             factory: factory,
             exports: {}
         };
     },
-    require: function(moduleName, callback) {
+    require: function(moduleName, callback, baseUrl) {
         if (typeof moduleName === 'string') {
             if (!callback) {
-                var module = __tpack__.modules[__tpack__.resolve(moduleName)];
+                var module = __tpack__.modules[__tpack__.resolve(moduleName, baseUrl)];
                 if (!module) {
                     throw new Error("Cannot find module '" + moduleName + "'");
                 }
@@ -32,7 +33,7 @@ var __tpack__ = __tpack__ || {
                 return url;
             }
             var a = document.createElement("a");
-            a.href = src + "/../" + url;
+            a.href = (__tpack__.prevUrl || src) + "/../" + url;
             return a.href;
         };
     })()

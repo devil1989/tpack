@@ -1,77 +1,139 @@
 #!/usr/bin/env node
 
-const defaultTpackConfig = "tpack.config.js";
+var Path = require('path');
+var FS = require('fs');
+var IO = require('tutils/io');
 
 main();
 
 function main() {
     
-    var Path = require('path');
-    var FS = require('fs');
+    // 优先考虑使用本地安装的 tpack 版本。
+    var localCli = IO.searchDirs("node_modules/tpack/bin/tpack-cli.js");
+    if (localCli && __filename !== localCli) {
+        return module.exports = require(localCli);
+    }
     
-    // 1. 优先考虑使用本地安装的 tpack 版本。
-    try {
-        var localCli = require.resolve(Path.resolve("node_modules/tpack/bin/tpack-cli.js"));
-        if (__filename !== localCli) {
-            return module.exports = require(localCli);
-        }
-    } catch (e) { }
-    
-    // 2. 载入 tpack 库。
+    // 载入 tpack 库。
     var tpack = module.exports = require('../lib/index.js');
     
-    // 3. 解析内置命令行参数。
-    var options = tpack.options;
-    
-    // -v, -version, --version
-    if (options.v || options.version || options["-version"]) {
-        console.log(require('../package.json').version);
-        return 0;
-    }
+    // 载入配置。
+    var options = parseArgv(process.argv);
+    var t;
     
     // -cwd, --cwd
-    if (options.cwd || options["-cwd"]) {
-        process.cwd(options.cwd || options["-cwd"]);
+    if (t = options["-cwd"] || options['cwd']) {
+        process.chdir(t);
     }
     
-    // -config, --config, 
-    var configName = options.config || options['-config'] || defaultTpackConfig;
+    // -c, -config, --config
+    if (options.config = IO.searchDirs(options['-config'] || options['config'] || options['c'] || "tpack.config.js")) {
+        if (Path.dirname(options.config) !== process.cwd()) {
+            process.chdir(Path.dirname(options.config));
+        }
+    } else {
+        options.config = Path.join(__dirname, "../lib/tpack.config.js");
+    }
     
-    // 4. 从当前目录开始查找 tpack.config.js 所在目录。
-    var configPath = Path.resolve(configName);
-    if (!FS.existsSync(configPath)) {
-        configPath = null;
-        var dir = Path.resolve();
-        while (dir !== '.') {
-            dir = Path.dirname(dir);
-            if (FS.existsSync(Path.join(dir, configName))) {
-                process.cwd(dir);
-                configPath = Path.join(dir, configName);
-                break;
-            }
+    // -dest, -out, -o
+    if (t = options['dest'] || options['out'] || options['o']) {
+        tpack.destPath = t;
+    }
+    
+    // -ignore, -i
+    if (t = options['ignore'] || options['i']) {
+        tpack.ignore(t.split(";"));
+    }
+    
+    // -verbose, -debug, -d
+    if (options['verbose'] || options['debug'] || options['d']) {
+        tpack.verbose = true;
+    }
+    
+    // --colors, -colors
+    if (options['-colors'] || options['colors']) {
+        tpack.coloredOutput = true;
+    }
+    
+    // --no-colors, -no-colors
+    if (options['-no-colors'] || options['no-colors']) {
+        tpack.coloredOutput = false;
+    }
+    
+    // -error, -e
+    if (options['error'] || options['e']) {
+        tpack.logLevel = tpack.LOG_LEVEL.error;
+    }
+    
+    // -warn
+    if (options['warn']) {
+        tpack.logLevel = tpack.LOG_LEVEL.warn;
+    }
+    
+    // -info
+    if (options['info']) {
+        tpack.logLevel = tpack.LOG_LEVEL.info;
+    }
+    
+    // -log
+    if (options['log']) {
+        tpack.logLevel = tpack.LOG_LEVEL.log;
+    }
+    
+    // -silence, -s
+    if (options['silence'] || options['s']) {
+        tpack.logLevel = tpack.LOG_LEVEL.none;
+    }
+    
+    // -lang
+    if ((options.lang = options['lang'] || 'zh-cn') != 'en-us') {
+        try {
+            tpack.messages = require('../i18n/' + options.lang + '.js');
+        } catch (e) {
+            
         }
     }
     
-    if (!configPath) {
-        configPath = Path.resolve(__dirname, "../lib/tpack.config.js");
+    // 支持载入全局模块。
+    if (options['global'] !== false) {
+        try {
+            require('require-global')([Path.resolve(__dirname, "../../"), Path.resolve(__dirname, "../node_modules/")]);
+        } catch (e) {
+        }
     }
+    
+    // 执行 tpack.config.js
+    require(options.config);
+    
+    // 自动执行默认任务。
+    return tpack.task(options[0] || "default", options);
+    
+}
 
-    options.config = configPath;
-    
-    // 5. 支持载入全局模块。
-    try {
-        require('require-global')([Path.resolve(__dirname, "../../"), Path.resolve(__dirname, "../node_modules/")]);
-    } catch (e) {
+/**
+ * 解析命令提示符参数。
+ * @param {Array} 原始参数数组。
+ * @returns {Object} 返回键值对象。
+ * @example 
+ * parseArgv(["a", "-c1", "-c2", "v", "b"]) // {0: "a", c1: true, c2: "v", 1: "b"}
+ */
+function parseArgv(argv) {
+    var result = { length: 0 };
+    // 0: node.exe, 1: tpack.config.js
+    for (var i = 2; i < argv.length; i++) {
+        var arg = argv[i];
+        if (/^[\-\/]/.test(arg)) {
+            var value = argv[i + 1];
+            // 如果下一个参数是参数名。
+            if (!value || /^[\-\/]/.test(value)) {
+                value = true;
+            } else {
+                i++;
+            }
+            result[arg.substr(1)] = value;
+        } else {
+            result[result.length++] = arg;
+        }
     }
-    
-    // 6. 执行 tpack.config.js
-    require(configPath);
-    
-    // 7. 自动执行默认任务。
-    process.nextTick(function () {
-        tpack.run();
-    })
-    
-    return 0;
-    
+    return result;
 }

@@ -13,7 +13,7 @@ function compile() {
     tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
     tpack.src("*.md", "*.markdown").pipe(require("tpack-node-markdown")).dest("$1.html");
     
-    tpack.src("*.html", "*.htm", "*.js", "*.css").pipe(require("tpack-assets").js, {
+    tpack.src("*.html", "*.htm", "*.js", "*.css").pipe(require("tpack-modular"), {
         
         // require 未包含扩展名时，尝试自动追加的扩展名。
         extensions: ['.json', '.jsx', '.es', '.es6', '.coffee', '.js', '.scss', '.less', '.css'],
@@ -52,11 +52,11 @@ function test() {
    // resolveUrl: tpack.cmd === "server" ? false : true
     });
 
-//if (tpack.cmd === "build") {
-//	// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
-//	tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
-//	tpack.addCdnUrl("cdn_upload", "http://cdn.com/assets");
-//}
+    //if (tpack.cmd === "build") {
+    //	// 资源文件夹下的文件统一使用 md5 命名。并重命名到 cdn_upload 目录。
+    //	tpack.src(/^((scripts|styles|images|fonts|resources)\/([^\/]*\/)*[^\.]*?)\.(.*)$/i).dest("cdn_upload/$1_<md5_6>.$4");
+    //	tpack.addCdnUrl("cdn_upload", "http://cdn.com/assets");
+    //}
 
 }
 
@@ -67,12 +67,10 @@ tpack.task("build", function () {
     //tpack.src("*.css").pipe(require('tpack-clean-css'));
     //tpack.src("*.js").pipe(require('tpack-uglify-js'));
     
-    tpack.build();
 });
 
 tpack.task("watch", function () {
     compile();
-    tpack.watch();
 });
 
 tpack.task("server", function () {
