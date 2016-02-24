@@ -1,7 +1,9 @@
 /*
 
 	Sass Compilation Error: 
-		Undefined variable: "$a".
+		The `libsass` binding was not found in F:\Node\node_modules\node-sass\vendor\win32-x64-47\binding.node
+This usually happens because your node version has changed.
+Run `npm rebuild node-sass` to build the binding for your current node version.
 		At {2)
 
 */

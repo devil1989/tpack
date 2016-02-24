@@ -9,10 +9,12 @@ main();
 function main() {
     
     // 优先考虑使用本地安装的 tpack 版本。
-    var localCli = IO.searchDirs("node_modules/tpack/bin/tpack-cli.js");
-    if (localCli && __filename !== localCli) {
-        return module.exports = require(localCli);
-    }
+    try {
+        var localCli = IO.searchDirs("node_modules/tpack/bin/tpack-cli.js");
+        if (localCli && __filename !== localCli) {
+            return module.exports = require(localCli);
+        }
+    } catch (e) { }
     
     // 载入 tpack 库。
     var tpack = module.exports = require('../lib/index.js');
@@ -97,9 +99,8 @@ function main() {
     // 支持载入全局模块。
     if (options['global'] !== false) {
         try {
-            require('require-global')([Path.resolve(__dirname, "../../"), Path.resolve(__dirname, "../node_modules/")]);
-        } catch (e) {
-        }
+            require('require-global')([Path.join(__dirname, "../../")]);
+        } catch (e) { }
     }
     
     // 执行 tpack.config.js
