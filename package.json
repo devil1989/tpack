@@ -29,9 +29,9 @@
     "homepage": "https://github.com/tpack/require-global#readme",
     "license": "SEE LICENSE IN <LICENSE>",
     "dependencies": {
-        "tutils": ">=0.0.3",
+        "tutils": ">=0.0.4",
         "chokidar": ">=1.0.3",
         "aspserver": ">=1.1.7",
-        "require-global": ">=1.0.4"
+        "require-global": ">=2.0.0"
     }
 }

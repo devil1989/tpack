@@ -1,18 +1,18 @@
-# TPack 介绍
-TPack 是一个使用 NodeJS 开发的项目构建工具。
-对于前端项目，它可以实现代码预编译、打包、压缩等功能。
+# TPack
+TPack 是一个使用 NodeJS 开发的基于规则的项目构建工具。
+它可以为前端项目提供代码打包、压缩、优化等功能。
 
 ## 下载安装
 
 1. 安装 NodeJS 和 npm。具体请参考 [NodeJS 官网](https://nodejs.org)
 2. 使用 npm 下载 TPack:
 
-    > npm install -g tpack
+    > npm install tpack -g
 
 3. 下载 TPack 常用插件：       
      
-    > npm install -g tpack-assets tpack-autoprefixer tpack-babel tpack-clean-css tpack-coffee-script tpack-concat tpack-less tpack-requirejs tpack-node-sass tpack-uglify-js tpack-node-markdown
- 
+    > npm install -g tpack-uglify-js tpack-clean-css tpack-autoprefixer tpack-modular tpack-concat tpack-babel tpack-coffee-script tpack-less tpack-node-markdown
+
 ## 首次使用
 
 ### 1. 在项目根目录新建 `tpack.config.js` 文件：
@@ -25,17 +25,13 @@ TPack 是一个使用 NodeJS 开发的项目构建工具。
             file.content += "哈哈";
         })
         .dest("$1.out");
-		
-	tpack.run();
+
+> 提示：可以使用 `tpack init` 命令自动生成 `tpack.config.js`。
     
 ### 2. 发布项目
 
-	> node tpack.config.js build
+	> tpack build
 	
-如果您已全局安装 tpack，也可以直接使用：
-
-    > tpack build
-
 执行后 TPack 会复制项目里所有文件到 _dest，其中所有 txt 文件末尾都会追加上“哈哈”两个字。
 
 ### 3. 实时编译(增量发布)
@@ -52,109 +48,164 @@ TPack 自带 Web 服务器：
 
 在浏览器打开 http://localhost:8080/a.txt, 会发现文件内容已经被处理过了。
 
-## 5. `tpack.config.js` 模板
+### 5. 任务
 
-    var tpack = require("tpack");
+TPack 可以定义多个任务，并根据需求执行不同的任务。在 `tpack.config.js` 中使用如下代码可以定义一个任务。
 
-    // 设置文件夹。
-    tpack.srcPath = "";
-    tpack.destPath = "_dest";
-
-    // 设置全局忽略的路径。
-    tpack.loadIgnoreFile(".gitignore");
-    tpack.ignore(".*", "_*", "$*", "*~", "tpack*");
-
-    // 所有任务都需要先执行以下预编译的规则。
-    tpack.src("*.scss", "*.sass").pipe(require("tpack-sass")).dest("$1.css");
-    tpack.src("*.less").pipe(require("tpack-less")).pipe(require("tpack-autoprefixer")).dest("$1.css");
-    tpack.src("*.es", "*.es6", "*.jsx").pipe(require("tpack-babel")).dest("$1.js");
-    tpack.src("*.coffee").pipe(require("tpack-coffee-script")).dest("$1.js");
-    
-    // 为 HTML 追加时间戳、内联，为 JS 打包 require 。
-    tpack.src("*").pipe(require("tpack-assets"), {
-        resolveUrl: tpack.cmd !== "server"
+    tpack.task("hello", function(options){
+        console.log(options.name);
     });
 
-    // 压缩 CSS 和 JS。
-    if(tpack.cmd === "build") {
-        tpack.src("*.css").pipe(require('tpack-clean-css'));
-        tpack.src("*.js").pipe(require('tpack-uglify-js'));
+然后执行以下命令调用任务：
+
+    > tpack hello -name world
+
+在控制台将会到输出了 `world`。
+
+> 提示：当直接执行 `tpack` 时，相当于执行了名为 `default` 的任务。
+
+## `tpack.config.js` 模板
+
+    var tpack = require("tpack");
+    tpack.destPath = "_dest";
+    tpack.server = "http://localhost:8088";
+    tpack.loadIgnoreFile(".gitignore");
+    tpack.ignore(".*", "_*", "$*", "*~", "node_modules");
+
+    function compile(options) {
+        tpack.src("*.scss", "*.sass").pipe(tpack.plugin("tpack-node-sass")).dest("$1.css");
+        tpack.src("*.less").pipe(tpack.plugin("tpack-less")).dest("$1.css");
+        tpack.src("*.css").pipe(tpack.plugin("tpack-autoprefixer"));
+
+        tpack.src("*.coffee").pipe(tpack.plugin("tpack-coffee-script")).dest("$1.js");
+        tpack.src("*.es", "*.es6", "*.jsx").pipe(tpack.plugin("tpack-babel")).dest("$1.js");
+
+        tpack.src("*.md", "*.markdown").pipe(tpack.plugin("tpack-node-markdown")).dest("$1.html");
+        tpack.src("*.html", "*.htm", "*.inc", "*.js", "*.css").pipe(tpack.plugin("tpack-modular"));
     }
 
-	tpack.run();
-    
-## 比较
+    tpack.task("build", function (options) {
+        compile(options);
+        tpack.src("*.css").pipe(tpack.plugin('tpack-clean-css'));
+        tpack.src("*.js").pipe(tpack.plugin('tpack-uglify-js'));
+    });
 
-### TPack 和 Gulp/Grunt 的区别
+    tpack.task("watch", function (options) {
+        compile(options);
+    });
 
-TPack 的发布策略和 Gulp/Grunt 不同，具有以下优势：
+    tpack.task("server", function (options) {
+        compile(options);
+    });
 
-1. TPack 能跟踪文件变化。比如 html 引用了 a.css，当 a.css 被重命名为 a_20050801.css 时，html 文件会自动更新。
-2. 只需写一遍配置，即可同时用于发布、监听、服务器。`tpack.config.js` 不会随着项目变大而导致难以维护。
-3. 只需全局安装一遍，不需要本地安装。
+> tpack 内置了配置模板，如果您只想压缩 JS/CSS 代码，无需其它操作，直接调用 `tpack` 即可。
 
-### TPack 和 Webpack 的区别
+## 优势
 
-TPack 通过插件 `tpack-assets`，提供了和 Webpack 类似的模块化方案。
+- 配置简单
+- 打包效率高
+- 只需全局安装一遍，随时使用。
+- 接口丰富，可以轻松地和其它工具集成。
 
-1. 配置更直观。 Webpack 需要指定每个目标文件怎么生成过来。 TPack 则需要指定每个源如何生成。 
-2. 除了 watch，TPack 还支持更稳定的服务器方式。
-Webpack 要求 html 引用生成好的 js 文件，TPack 则建议 html 引用源文件，比如 html 直接引用 less。
-这样可以确保每次 html 引用的都是生成好的最新版。
-3. 除了 require，TPack 支持简单的 #include。
-4. Webpack 需要配置文件，配置会随着项目变大导致难以维护。TPack 则不需要，打包配置和其它配置是共享的。
+### 和 Grunt 比较
 
-## 项目实战
+TPack 可以比 Grunt 更方便灵活地描述打包需求。
 
-### 1. HTML 内联
+### 和 Gulp 比较
 
-通过 TPack 的插件 `tpack-assets`，可以轻松实现 HTML 内联语法，用法如下：
+Gulp 基于流发布，将源文件看成流然后一一处理。Tpack 则基于规则进行发布，源文件会根据定义的规则依次处理。此策略可以让 TPack 拥有以下 Gulp 很难实现的功能：
+
+1. TPack 能跟踪文件变化。比如 html 引用了 a.css，当 a.css 被重命名为 a_20050801.css 时，html 内的引用也会自动更新。
+2. 无论是实现发布、监听还是开发服务器，都共享同一系列规则。`tpack.config.js` 不会随着项目变大而导致难以维护。
+3. 每个文件独立生成，可以事实查看进度。
+
+### 和 Webpack 比较
+
+TPack 通过插件 `tpack-modular`，可以实现和 Webpack 类似的模块化功能。
+
+1. 都能实现 CommonJs 的模块化方案，并提供模块自动重加载（Hot Loader）功能吧；都能打包 NodeJs 模块。
+2. `tpack-modular` 不提供 AMD 模块的支持，打包出的文件更清晰易读和通用。
+3. 您也可以选择使用 `tpack-webpack` 来实现模块化方案。
+
+## 模块化功能
+
+要使用模块化功能，必须在配置文件中添加：
+
+    tpack.src("*").pipe(require("tpack-modular"));
+
+### 1. HTML 模板
+
+在 HTML 中可以内联外部文件：
 
     <!-- #include virtual="header.inc" -->
 
-更多说明和用法见 [HTML处理](https://github.com/tpack/tpack-assets/wiki/html)
+更多说明和用法见 [HTML处理](https://github.com/tpack/tpack-modular/wiki/html)
 
 ### 2. JS 模块化
 
-通过 TPack 的插件 `tpack-assets`，可以实现 CommonJs 模块化方案。
-通过 TPack 的插件 `tpack-requirejs`，可以实现 AMD 模块化方案。
-用法如下：
+#### 同步加载
 
-    require("./a.js");
+1. 定义文件 a.js
 
-打包后：代码会变成：
+    module.exports = function(){
+        alert("a");
+    };
+
+2. 定义文件 b.js
+
+    var a = require("./a.js");
+    a();
+
+3. 打包后，b.js 会变成：
 
     var __tpack__ = __tpack__ || { ... };
 
-    __tpack__.define("a.js", function(require, exports, module){ ... });
+    __tpack__.define("a.js", function(require, exports, module){ 
+        module.exports = function(){
+            alert("a");
+        };
+    });
 
     __tpack__.define("b.js", function(require, exports, module){ 
-        require("./a.js");
+        var a = require("./a.js");
+        a();
     });
 
     __tpack__.require("b.js");
 
-更多说明和用法见 [Js 模块化](https://github.com/tpack/tpack-assets/wiki/js)
+#### 异步加载
 
-### 3. 代码压缩和时间戳
+4. 定义文件 d.js
 
-如果您有一个现成的 PHP 等项目，只需要压缩代码、加时间戳等功能，可以使用 `tpack-web` 插件。
+    require("./c.js", function(c){
+        alert(c);
+    });
 
-只需两个命令，快速发布您的前端项目：
+c.js 不会被打包进来，执行时会动态加载。
 
-    > npm install -g tpack-web              # 安装 TPack-web
-    > tpack-web -out ../build/
+更多说明和用法见 [Js 模块化](https://github.com/tpack/tpack-modular/wiki/js)
 
-发布完成后，项目中所有文件都会拷贝到 ../build/，并作了以下处理：
+### 3. 时间戳
 
-1. 检查 css/js/html 等语法错误。
-2. 预编译 less/sass、ee6/jsx、coffee-script 等自定义语法。
-3. 打包 AMD/CMD(require) 代码和 #include 指令。
-4. 生成 css 雪碧图。
-5. 压缩 css/js 文件。
-6. 为 css/js 引用路径追加 MD5 以避免缓存。
+默认地，所有地址引用都会追加 md5 值：
 
-更多说明和用法见 [TPack-Web 主页](https://github.com/tpack/tpack-web)
+    <script src="a.js"></script>
+
+发布后：
+
+    <script src="a.js?_=2e24a3"></script>
+
+更多说明和用法见 [时间戳](https://github.com/tpack/tpack-modular/wiki/url)
+
+### 3. 内联文件
+
+    <script src="a.js?__inline"></script>
+
+发布后：
+
+    <script>
+        /* a.js 的源码 */
+    </script>
 
 ## 文档
 
